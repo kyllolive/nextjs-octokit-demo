@@ -21,7 +21,7 @@ const home = {
   COLLAB_WEBKOM_1: 'Tahanan ng Pilipinas',
   COLLAB_WEBKOM_2: 'WebKomiks',
   COLLAB_EPICO_1: 'CrowdSource Comic',
-  COLLAB_EPICO_2: 'Platform ng Pagsasalin',
+  COLLAB_EPICO_2: "Platform ng Pagsasalin",
   COLLAB_CONTENT: 'MAGTULONG SA PAGDALA NG PHILPPINE KOMIKS SA MUNDO',
 };
 
