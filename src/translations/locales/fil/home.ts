@@ -22,7 +22,7 @@ const home = {
   COLLAB_WEBKOM_2: 'WebKomiks',
   COLLAB_EPICO_1: 'CrowdSource Comic',
   COLLAB_EPICO_2: 'Platform ng Pagsasalin',
-  COLLAB_CONTENT: 'MAGTULONG SA PAGDALA NG PHILPPINE KOMIKS SA MUNDO',
+  COLLAB_CONTENT: test,
 };
 
 export default home;
