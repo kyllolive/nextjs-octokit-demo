@@ -16,6 +16,12 @@ export type Localization = {
   namespace: string;
 };
 
+export type SourceLanguage = {
+  locale: Locale;
+  translations: Translations;
+  namespace: string;
+};
+
 export function isLocale(tested: string): tested is Locale {
   return locales.some((locale) => locale === tested);
 }

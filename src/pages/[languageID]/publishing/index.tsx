@@ -1,19 +1,19 @@
 import React from "react";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import { locales } from "../../translations/config";
+import { locales } from "../../../translations/config";
 import {
   getLocalizationProps,
   LanguageProvider,
-} from "../../context/language.context";
-import { Localization, SourceLanguage } from "../../translations/types";
-import { Home } from "../../containers/Home/Home";
+} from "../../../context/language.context";
+import { Localization, SourceLanguage } from "../../../translations/types";
+import { Home } from "../../../containers/Home/Home";
 
-export interface IHomePageProps {
+export interface IAboutPageProps {
   localization?: Localization;
   sourceLanguage?: SourceLanguage;
 }
 
-const HomePage: NextPage<IHomePageProps> = ({
+const AboutPage: NextPage<IAboutPageProps> = ({
   localization,
   sourceLanguage,
 }) => {
@@ -56,4 +56,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export default HomePage;
+export default AboutPage;

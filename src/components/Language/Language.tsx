@@ -1,38 +1,19 @@
-import React, { ChangeEvent, FC, useContext, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
-  Dialog,
-  useTheme,
-  useMediaQuery,
   FormControl,
   Select,
   MenuItem,
   Button,
   Divider,
-  Typography,
-  FormControlLabel,
-  Checkbox,
   Box,
-  Tooltip,
-  IconButton,
+  Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/material";
-import { LanguageSettingsContext } from "../../context/language.context";
+
 import { useRouter } from "next/router";
 import { LANGUAGES } from "../../constants/language.constants";
 
-// import {
-//   IUpdateLanguageSettingsData,
-//   IUpdateLanguageSettingsVars,
-// } from '@interfaces/user.interface';
-// import { UPDATE_LANG_SETTINGS } from '@graphql/users.graphql';
-// import { useAuthState } from '@contexts/auth.context';
-
-export const Language: FC<{ preferences?: boolean }> = (props) => {
-  const { preferences } = props;
+export const Language: FC = (props) => {
   const { push, asPath, query } = useRouter();
-  // const classes = useStyle();
-  const { breakpoints } = useTheme();
-  const languageContext = useContext(LanguageSettingsContext);
   const languageID = query.languageID as any;
   const [language, setLanguage] = useState<string | undefined>(languageID);
 
@@ -57,7 +38,6 @@ export const Language: FC<{ preferences?: boolean }> = (props) => {
       <Box
         style={{
           display: "flex",
-
           alignItems: "center",
           justifyContent: "center",
           gap: "1rem",

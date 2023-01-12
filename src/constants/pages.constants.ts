@@ -1,0 +1,41 @@
+export const PAGES = [
+  { pathname: "home", path: "/" },
+  { pathname: "about", path: "/about" },
+  { pathname: "apps", path: "/apps" },
+  { pathname: "auth", path: "/auth" },
+  { pathname: "console/series", path: "/console/series" },
+  { pathname: "console/series/create", path: "/console/series/create" },
+  {
+    pathname: "console/series/[seriesId]/edit",
+    path: "/console/series/[seriesId]/edit",
+  },
+  {
+    pathname: "console/series/[seriesId]/chapter/[chapterId]/edit",
+    path: "/console/series/[seriesId]/chapter/[chapterId]/edit",
+  },
+  {
+    pathname: "console/series/[seriesId]/chapter/create",
+    path: "/console/series/[seriesId]/chapter/create",
+  },
+  {
+    pathname: "console/series/[seriesId]/chapters",
+    path: "/console/series/[seriesId]/chapters",
+  },
+  {
+    pathname: "console/series/[seriesId]/chapter/view/chapters",
+    path: "/console/series/[seriesId]/chapter/view/chapters",
+  },
+  { pathname: "console/series/[seriesId]", path: "/console/series/[seriesId]" },
+  { pathname: "dashboard", path: "/dashboard" },
+  { pathname: "dashboard/settings", path: "/dashboard/settings" },
+  { pathname: "dashboard/subs", path: "/dashboard/subs" },
+  { pathname: "genres", path: "/genres" },
+  { pathname: "help", path: "/help" },
+  { pathname: "publishing", path: "/publishing" },
+  { pathname: "scanlate", path: "/scanlate" },
+  { pathname: "series", path: "/series" },
+  { pathname: "settings", path: "/settings" },
+  { pathname: "support", path: "/support" },
+  { pathname: "u/user_name", path: "u/user_name" },
+  { pathname: "404", path: "/404" },
+];

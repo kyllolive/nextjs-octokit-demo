@@ -8,15 +8,18 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 
 export const Item = (props) => {
-  const { translationKey, translationValue, handleNewItem } = props;
+  const { translationKey, translationValue, source, handleNewItem } = props;
   const [originalText, setOriginalText] = React.useState<string>("");
   const [newText, setNewText] = React.useState<string>("");
-  const [keyName, setKeyName] = React.useState<string>(translationKey);
+  const [keyName, setKeyName] = React.useState<string>("");
 
-  const handleChange = (event) => {};
+  useEffect(() => {
+    setOriginalText(translationValue);
+    setKeyName(translationKey);
+  }, [translationValue, translationKey]);
 
   const handleClick = () => {
     handleNewItem({
@@ -30,14 +33,8 @@ export const Item = (props) => {
       <Grid container spacing={2}>
         <Grid item xs={4}>
           <Box margin={"1rem"}>
-            <Typography
-              gutterBottom
-              align="center"
-              style={{
-                fontSize: "13px",
-              }}
-            >
-              {translationKey}
+            <Typography gutterBottom align="center">
+              {source}
             </Typography>
           </Box>
         </Grid>
@@ -51,9 +48,17 @@ export const Item = (props) => {
         <Grid item xs={4}>
           <Box style={{ margin: "1rem" }}>
             <TextField
+              id="outlined-basic"
+              label="Your Translation"
+              variant="outlined"
+              value={newText}
               type="text"
               onChange={(event) => {
                 setNewText(event.target.value);
+                // handleNewItem({
+                //   translationKey: keyName,
+                //   translationValue: event.target.value,
+                // })
               }}
             />
           </Box>
