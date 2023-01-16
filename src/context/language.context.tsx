@@ -85,6 +85,89 @@ export const getLocalizationProps = (languageID: string, namespace: string) => {
   };
 };
 
+export const getAllLocalization = (languageID: string) => {
+  const lang: Locale = langLocales.includes(languageID as Locale)
+    ? (languageID as Locale)
+    : "en";
+
+  let translations = {};
+  let locale = locales[lang];
+  let localeNamespace = Object.keys(locale);
+
+  localeNamespace.forEach((namespace) => {
+    const strings = locale[namespace];
+
+    translations = { ...translations, ...strings };
+  });
+
+  return {
+    locale: lang || "en",
+    translations,
+    namespace: "all",
+  };
+};
+
+export const getUniqueProperties = (languageID: string) => {
+  const lang: Locale = langLocales.includes(languageID as Locale)
+    ? (languageID as Locale)
+    : "en";
+
+  let translations = {};
+  let locale = locales[lang];
+  let localeNamespace = Object.keys(locale);
+
+  localeNamespace.forEach((namespace) => {
+    const strings = locale[namespace];
+
+    Object.assign(translations, strings);
+  });
+
+  // console.log("translations", translations);
+
+  return {
+    locale: lang || "en",
+    translations,
+    namespace: "all",
+  };
+};
+// for (let i = 0; i < localeNamespace.length; i++) {
+//   const strings = locale[localeNamespace[i]];
+//   if (i === 0) {
+//     current = strings
+//   } else {
+//     current = {...current, ...strings}
+
+//   }
+
+//   console.log("im strings", strings);
+//   // Object.entries(strings).forEach(([key, value]) => combined.set(key, value));
+
+//   //check current property and previous property for duplicate properties
+//   // if (i > 0) {
+//   //   const prevStrings = locale[localeNamespace[i - 1]];
+//   //   const prevKeys = Object.keys(prevStrings);
+//   //   const currentKeys = Object.keys(strings);
+//   //   const duplicateKeys = prevKeys.filter((key) => currentKeys.includes(key));
+//   //   console.log("duplicateKeys", duplicateKeys);
+//   // }
+// }
+
+// const entries = Array.from(combined.entries());
+
+// console.log("entries", combined.values());
+// remove duplicate keys from commonStrings and add to nonCommonStrings
+// for (const key in commonStrings) {
+//   if (commonStrings.hasOwnProperty(key)) {
+//     if (nonCommonStrings && nonCommonStrings.hasOwnProperty(key)) {
+//       // delete commonStrings[key];
+//     } else {
+//       nonCommonStrings = { ...nonCommonStrings, [key]: commonStrings[key] };
+//     }
+//   }
+// }
+
+// console.log("commonStrings", commonStrings);
+
 export const LanguageSettingsContext = React.createContext(null as any);
 
 export const LanguageModalProvider = ({ children }) => {

@@ -15,6 +15,9 @@ export default async function handler(req, res) {
     auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
   });
 
+  //list of spread operator assignments
+  let importedFiels = [];
+
   // get list of files in directory
   const sourceFile = project.addSourceFileAtPathIfExists(
     `src/translations/locales/${languageID}/${namespace}.ts`
@@ -34,44 +37,51 @@ export default async function handler(req, res) {
           return;
         }
 
-        objectLiteralExpression.getPropertyOrThrow(item.translationKey).set({
-          initializer: `'${item.translationValue}'`,
-        });
+        let resultOfSearch = objectLiteralExpression.getProperty(
+          item.translationKey
+        );
+        console.log("resultOfSearch", resultOfSearch);
+
+        // objectLiteralExpression.getPropertyOrThrow(item.translationKey).set({
+        //   initializer: `'${item.translationValue}'`,
+        // });
+
+        //check if translationValue is not inside the object literal
 
         const modifiedCode = sourceFile.getText();
 
-        if (modifiedCode) {
-          //check if pull request already exists
-          const { data: pullRequests } = await octokit.request(
-            "GET /repos/{owner}/{repo}/pulls",
-            {
-              owner: "kyllolive",
-              repo: "nextjs-octokit-demo",
-              state: "open",
-              head: `update-translation`,
-            }
-          );
-          const result = await octokit.createPullRequest({
-            owner: "kyllolive",
-            repo: "nextjs-octokit-demo",
-            title: "Update translation",
-            body: "Update translation",
-            head: "update-translation",
-            base: "main",
-            update: pullRequests[0]?.state === "open" ? true : false,
-            changes: [
-              {
-                files: {
-                  [`src/translations/locales/${languageID}/${namespace}.ts`]:
-                    modifiedCode,
-                },
-                commit: "Update translation",
-              },
-            ],
-          });
+        // if (modifiedCode) {
+        //   //check if pull request already exists
+        //   const { data: pullRequests } = await octokit.request(
+        //     "GET /repos/{owner}/{repo}/pulls",
+        //     {
+        //       owner: "kyllolive",
+        //       repo: "nextjs-octokit-demo",
+        //       state: "open",
+        //       head: `update-translation`,
+        //     }
+        //   );
+        //   const result = await octokit.createPullRequest({
+        //     owner: "kyllolive",
+        //     repo: "nextjs-octokit-demo",
+        //     title: "Update translation",
+        //     body: "Update translation",
+        //     head: "update-translation",
+        //     base: "main",
+        //     update: pullRequests[0]?.state === "open" ? true : false,
+        //     changes: [
+        //       {
+        //         files: {
+        //           [`src/translations/locales/${languageID}/${namespace}.ts`]:
+        //             modifiedCode,
+        //         },
+        //         commit: "Update translation",
+        //       },
+        //     ],
+        //   });
 
-          console.log("Done!", result);
-        }
+        //   console.log("Done!", result);
+        // }
       });
     }
   }

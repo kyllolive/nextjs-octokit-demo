@@ -4,18 +4,32 @@ import { locales } from "../../translations/config";
 import {
   getLocalizationProps,
   LanguageProvider,
+  getAllLocalization,
+  getUniqueProperties,
 } from "../../context/language.context";
 import { Localization, SourceLanguage } from "../../translations/types";
 import { Home } from "../../containers/Home/Home";
+import { Octokit } from "octokit";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
+
+const MyOctokit = Octokit.plugin(createPullRequest);
+
+const octokit = new MyOctokit({
+  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
+});
 
 export interface IHomePageProps {
   localization?: Localization;
   sourceLanguage?: SourceLanguage;
+  commonFiles?: any;
+  nonCommonFiles?: any;
 }
 
 const HomePage: NextPage<IHomePageProps> = ({
   localization,
   sourceLanguage,
+  commonFiles,
+  nonCommonFiles,
 }) => {
   // const strings = typeof localization?.translations;
 
@@ -25,6 +39,8 @@ const HomePage: NextPage<IHomePageProps> = ({
         <Home />
       </LanguageProvider> */}
       <Home
+        commonFiles={commonFiles}
+        nonCommonFiles={nonCommonFiles}
         namespace={localization?.namespace}
         translations={localization?.translations}
         sourceLanguage={sourceLanguage.translations}
@@ -34,15 +50,29 @@ const HomePage: NextPage<IHomePageProps> = ({
 };
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
-  const sourceLanguage = getLocalizationProps("en", "home");
-  const localization = getLocalizationProps(
-    ctx.params?.languageID as string,
-    "home"
-  );
+  const sourceLanguage = getAllLocalization("en");
+
+  const allLocalization = getAllLocalization(ctx.params?.languageID as string);
+
+  //get all files in translations folder using octokit
+
+  const { data: nonCommonFiles } = await octokit.rest.repos.getContent({
+    owner: "kyllolive",
+    repo: "nextjs-octokit-demo",
+    path: `src/translations/locales/${ctx.params?.languageID}`,
+  });
+
+  const { data: commonFiles } = await octokit.rest.repos.getContent({
+    owner: "kyllolive",
+    repo: "nextjs-octokit-demo",
+    path: `src/translations/locales/${ctx.params?.languageID}/commons`,
+  });
 
   return {
     props: {
-      localization,
+      commonFiles,
+      nonCommonFiles,
+      localization: allLocalization,
       sourceLanguage,
     },
     revalidate: 20,
