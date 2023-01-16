@@ -19,72 +19,90 @@ export default async function handler(req, res) {
   let importedFiels = [];
 
   // get list of files in directory
-  const sourceFile = project.addSourceFileAtPathIfExists(
-    `src/translations/locales/${languageID}/${namespace}.ts`
+  // const sourceFile = project.addSourceFileAtPathIfExists(
+  //   `src/translations/locales/${languageID}/${namespace}.ts`
+  // );
+
+  //
+  const sourceFileFromGithub = await octokit.request(
+    "GET /repos/{owner}/{repo}/contents/{path}",
+    {
+      owner: "kyllolive",
+      repo: "nextjs-octokit-demo",
+      path: `src/translations/locales/${languageID}/${namespace}.ts`,
+    }
   );
+
+  // convert content to utf8
+  const content = Buffer.from(
+    sourceFileFromGithub.data["content"],
+    "base64"
+  ).toString("utf8");
+
+  const addSourceFile = project.addSourceFileAtPathIfExists(
+    sourceFileFromGithub.data["path"]
+  );
+
+  // console.log(addSourceFile);
 
   //get list of object literals in file
 
-  const propertyToUpdate = sourceFile.getVariableDeclarationOrThrow(namespace);
+  const propertyToUpdate =
+    addSourceFile.getVariableDeclarationOrThrow(namespace);
 
   let objectLiteralExpression =
     propertyToUpdate.getInitializer() as ObjectLiteralExpression;
 
-  if (items.length > 0) {
-    if (sourceFile) {
-      items.forEach(async (item) => {
-        if (!item.translationKey) {
-          return;
-        }
+  console.log(objectLiteralExpression);
 
-        let resultOfSearch = objectLiteralExpression.getProperty(
-          item.translationKey
-        );
-        console.log("resultOfSearch", resultOfSearch);
+  // if (items.length > 0) {
+  //   if (sourceFile) {
+  //     items.forEach(async (item) => {
+  //       if (!item.translationKey) {
+  //         return;
+  //       }
 
-        // objectLiteralExpression.getPropertyOrThrow(item.translationKey).set({
-        //   initializer: `'${item.translationValue}'`,
-        // });
+  //       objectLiteralExpression.getPropertyOrThrow(item.translationKey).set({
+  //         initializer: `'${item.translationValue}'`,
+  //       });
 
-        //check if translationValue is not inside the object literal
+  //       const modifiedCode = sourceFile.getText();
 
-        const modifiedCode = sourceFile.getText();
+  //       if (modifiedCode) {
+  //         //check if pull request already exists
+  //         const { data: pullRequests } = await octokit.request(
+  //           "GET /repos/{owner}/{repo}/pulls",
+  //           {
+  //             owner: "kyllolive",
+  //             repo: "nextjs-octokit-demo",
+  //             state: "open",
+  //             head: `update-translation`,
+  //           }
+  //         );
+  //         // const result = await octokit.createPullRequest({
+  //         //   owner: "kyllolive",
+  //         //   repo: "nextjs-octokit-demo",
+  //         //   title: "Update translation",
+  //         //   body: "Update translation",
+  //         //   head: "update-translation",
+  //         //   base: "main",
+  //         //   update: pullRequests[0]?.state === "open" ? true : false,
+  //         //   changes: [
+  //         //     {
+  //         //       files: {
+  //         //         [`src/translations/locales/${languageID}/${namespace}.ts`]:
+  //         //           modifiedCode,
+  //         //       },
+  //         //       commit: "Update translation",
+  //         //     },
+  //         //   ],
+  //         // });
 
-        // if (modifiedCode) {
-        //   //check if pull request already exists
-        //   const { data: pullRequests } = await octokit.request(
-        //     "GET /repos/{owner}/{repo}/pulls",
-        //     {
-        //       owner: "kyllolive",
-        //       repo: "nextjs-octokit-demo",
-        //       state: "open",
-        //       head: `update-translation`,
-        //     }
-        //   );
-        //   const result = await octokit.createPullRequest({
-        //     owner: "kyllolive",
-        //     repo: "nextjs-octokit-demo",
-        //     title: "Update translation",
-        //     body: "Update translation",
-        //     head: "update-translation",
-        //     base: "main",
-        //     update: pullRequests[0]?.state === "open" ? true : false,
-        //     changes: [
-        //       {
-        //         files: {
-        //           [`src/translations/locales/${languageID}/${namespace}.ts`]:
-        //             modifiedCode,
-        //         },
-        //         commit: "Update translation",
-        //       },
-        //     ],
-        //   });
-
-        //   console.log("Done!", result);
-        // }
-      });
-    }
-  }
+  //         // console.log("Done!", result);
+  //       }
+  //     });
+  //   }
+  // }
 
   //loop through imported files and search for the object literal
   //   for (const importedFile of importedFiles) {
