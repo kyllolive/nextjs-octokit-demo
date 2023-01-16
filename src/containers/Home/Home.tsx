@@ -67,7 +67,7 @@ export const Home = (props) => {
     setPage(page);
   };
   const handleSubmitOctokit = async () => {
-    const result = await fetch(`/api/create-pr`, {
+    const result = await fetch(`/api/create-pr-test`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
