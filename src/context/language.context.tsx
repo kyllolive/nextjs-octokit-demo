@@ -6,6 +6,17 @@ import defaultStrings from "../translations/locales/en";
 import locales from "../translations/locales";
 import { locales as langLocales } from "../translations/config";
 import { INIT_LOCALIZATION } from "../translations/constant";
+import commonsEn from "../translations/locales/en/commons";
+import commonsCeb from "../translations/locales/ceb/commons";
+import commonsEs from "../translations/locales/es/commons";
+import commonsFil from "../translations/locales/fil/commons";
+import commonsFr from "../translations/locales/fr/commons";
+import commonsHi from "../translations/locales/hi/commons";
+import commonsId from "../translations/locales/id/commons";
+import commonsJa from "../translations/locales/ja/commons";
+import commonsKo from "../translations/locales/ko/commons";
+import commonsMr from "../translations/locales/mr/commons";
+import commonsZh from "../translations/locales/zh/commons";
 
 /**
  * Language Context
@@ -90,14 +101,43 @@ export const getAllLocalization = (languageID: string) => {
     ? (languageID as Locale)
     : "en";
 
+  let myTranslations = [];
   let translations = {};
+  let commons =
+    (lang === "en" && commonsEn) ||
+    (lang === "ceb" && commonsCeb) ||
+    (lang === "fil" && commonsCeb) ||
+    (lang === "ja" && commonsCeb) ||
+    (lang === "fr" && commonsCeb) ||
+    (lang === "zh" && commonsCeb) ||
+    (lang === "es" && commonsCeb) ||
+    (lang === "ko" && commonsCeb) ||
+    (lang === "hi" && commonsCeb) ||
+    (lang === "mr" && commonsCeb) ||
+    (lang === "id" && commonsCeb);
+
   let locale = locales[lang];
   let localeNamespace = Object.keys(locale);
+  let commonNamespace = Object.keys(commons);
 
   localeNamespace.forEach((namespace) => {
     const strings = locale[namespace];
 
     translations = { ...translations, ...strings };
+
+    // for (let key in strings) {
+    //   myTranslations.push({
+    //     [key]: strings[key],
+    //     path: `/src/translations/locales/${lang}/${namespace}`,
+    //   });
+    // }
+
+    // console.log(myTranslations);
+
+    // myTranslations.push({
+    //   [namespace]: localeNamespace[namespace],
+    //   path: `/src/translations/locales/${lang}`,
+    // });
   });
 
   return {

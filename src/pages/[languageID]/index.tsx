@@ -50,6 +50,8 @@ const HomePage: NextPage<IHomePageProps> = ({
 };
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
+  let myTranslations;
+
   const sourceLanguage = getAllLocalization("en");
 
   const allLocalization = getAllLocalization(ctx.params?.languageID as string);
@@ -68,6 +70,25 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     path: `src/translations/locales/${ctx.params?.languageID}/commons`,
   });
 
+  if (nonCommonFiles) {
+    for (let i = 0; i < nonCommonFiles.length; i++) {
+      if (nonCommonFiles[i].name === "commons") return;
+
+      const pathContent = nonCommonFiles[i].path;
+
+      const result = await octokit.rest.repos.getContent({
+        owner: "kyllolive",
+        repo: "nextjs-octokit-demo",
+        path: pathContent,
+      });
+
+      const string = Buffer.from(result.data["content"], "base64").toString(
+        "utf8"
+      );
+      console.log(string);
+      return;
+    }
+  }
   return {
     props: {
       commonFiles,
