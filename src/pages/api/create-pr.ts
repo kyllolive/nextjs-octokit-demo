@@ -15,9 +15,6 @@ export default async function handler(req, res) {
     auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
   });
 
-  //list of spread operator assignments
-  let importedFiels = [];
-
   // get list of files in directory
   // const sourceFile = project.addSourceFileAtPathIfExists(
   //   `src/translations/locales/${languageID}/${namespace}.ts`
@@ -53,7 +50,7 @@ export default async function handler(req, res) {
   let objectLiteralExpression =
     propertyToUpdate.getInitializer() as ObjectLiteralExpression;
 
-  console.log(objectLiteralExpression);
+  // console.log(objectLiteralExpression);
 
   // if (items.length > 0) {
   //   if (sourceFile) {

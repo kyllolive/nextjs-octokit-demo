@@ -12,7 +12,7 @@ import {
 import { Item } from "../../components/Items/Item";
 import { Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { LanguageSettingsContext } from "../../context/language.context";
 import { Language } from "../../components/Language/Language";
@@ -26,11 +26,18 @@ const octokit = new MyOctokit({
 
 export const Home = (props) => {
   const ROWS_PER_PAGE = 10;
-  const { translations, sourceLanguage, namespace } = props;
+  const {
+    translations,
+    sourceLanguage,
+    commonFiles,
+    nonCommonFiles,
+    githubfiles,
+  } = props;
   const { push, pathname, query } = useRouter();
   const languageID = query.languageID as string;
   const [rowsPerPage] = React.useState(ROWS_PER_PAGE);
   const [page, setPage] = React.useState<number>(1);
+  const [pullRequestState, setPullRequestState] = useState(false);
   const [searchField, setSearchField] = React.useState("");
   const [items, setItems] = React.useState([
     {
@@ -67,24 +74,134 @@ export const Home = (props) => {
     setPage(page);
   };
   const handleSubmitOctokit = async () => {
-    const result = await fetch(`/api/create-pr-test`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items,
-        languageID,
-        namespace,
-      }),
-    }).then((res) => res.json());
+    //iterate items
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const input = `${item.translationKey}: '${item.translationValue}'`;
+      const key = input.match(/^.*:/)[0].replace(":", "").trim();
+      const newValue = input.match(/'.*'$/)[0].replace(/'/g, "");
+      const regex = new RegExp(`(${key}): '(.*)'`);
+      let updatedString;
 
-    console.log("rest", result);
+      commonFiles.forEach(async (file) => {
+        const { data: fileContent } = await octokit.rest.repos.getContent({
+          owner: "kyllolive",
+          repo: "nextjs-octokit-demo",
+          path: `${file.path}`,
+        });
+
+        const fileContentString = Buffer.from(
+          fileContent.content,
+          "base64"
+        ).toString();
+
+        updatedString = fileContentString.replace(regex, `$1: '${newValue}'`);
+
+        if (updatedString === fileContentString) {
+          console.log("no match");
+          return;
+          // nonCommonFiles.forEach(async (file) => {
+          //   const { data: fileContentNonCommon } =
+          //     await octokit.rest.repos.getContent({
+          //       owner: "kyllolive",
+          //       repo: "nextjs-octokit-demo",
+          //       path: `${file.path}`,
+          //     });
+
+          //   if (!fileContentNonCommon) return;
+
+          //   const fileContentStringNonCommon = Buffer.from(
+          //     fileContentNonCommon.content,
+          //     "base64"
+          //   ).toString();
+
+          //   console.log(fileContentNonCommon);
+
+          //   updatedString = fileContentStringNonCommon.replace(
+          //     regex,
+          //     `$1: '${newValue}'`
+          //   );
+
+          //   if (updatedString === fileContentStringNonCommon) {
+          //     console.log("no match");
+          //     return;
+          //   } else {
+          //     // const fileContentBuffer = Buffer.from(updatedString);
+          //     // const fileContentBase64 = fileContentBuffer.toString("base64");
+          //     const result = await octokit.createPullRequest({
+          //       owner: "kyllolive",
+          //       repo: "nextjs-octokit-demo",
+          //       title: "update translation",
+          //       body: "update translation",
+          //       head: "update-translation",
+          //       update: pullRequestState,
+          //       base: "main",
+          //       changes: [
+          //         {
+          //           files: {
+          //             [`${file.path}`]: updatedString,
+          //           },
+          //           commit: "update translation",
+          //         },
+          //       ],
+          //     });
+          //     console.log("result", result);
+          //     return result;
+          //   }
+          // });
+        }
+
+        // const fileContentBuffer = Buffer.from(updatedString);
+        // const fileContentBase64 = fileContentBuffer.toString("base64");
+
+        const result = await octokit.createPullRequest({
+          owner: "kyllolive",
+          repo: "nextjs-octokit-demo",
+          title: "update translation",
+          body: "update translation",
+          head: "update-translation",
+          update: pullRequestState || true,
+          base: "main",
+          changes: [
+            {
+              files: {
+                [`${file.path}`]: updatedString,
+              },
+              commit: "update translation",
+            },
+          ],
+        });
+
+        if (result.status === 200) {
+          console.log(result);
+          return;
+        }
+      });
+    }
   };
 
   const handleOpenLanguage = () => {
     setIsLanguageModalOpen(true);
   };
+
+  useEffect(() => {
+    const fetchPullRequest = async () => {
+      const { data: pullRequests } = await octokit.request(
+        "GET /repos/{owner}/{repo}/pulls",
+        {
+          owner: "kyllolive",
+          repo: "nextjs-octokit-demo",
+          state: "open",
+          head: `update-translation`,
+        }
+      );
+
+      if (pullRequests.state === "open") {
+        setPullRequestState(true);
+      }
+    };
+    fetchPullRequest();
+  }, []);
 
   return (
     <>
@@ -178,7 +295,7 @@ export const Home = (props) => {
             </Typography>
           </Grid>
         </Grid>
-        {searchField === "" &&
+        {/* {searchField === "" &&
           Object.keys(translations)
             .slice((page - 1) * rowsPerPage, page * rowsPerPage)
             .map((key, i) => (
@@ -192,7 +309,10 @@ export const Home = (props) => {
                   />
                 </Grid>
               </Grid>
-            ))}
+            ))} */}
+        {githubfiles.map((file, i) => (
+          <Grid container spacing={2} key={i}></Grid>
+        ))}
         {searchField !== "" &&
           searchString.map((item, i) => (
             <Grid container spacing={2} key={i}>

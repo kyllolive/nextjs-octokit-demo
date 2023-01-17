@@ -23,6 +23,7 @@ export interface IHomePageProps {
   sourceLanguage?: SourceLanguage;
   commonFiles?: any;
   nonCommonFiles?: any;
+  githubfiles?: any;
 }
 
 const HomePage: NextPage<IHomePageProps> = ({
@@ -30,6 +31,7 @@ const HomePage: NextPage<IHomePageProps> = ({
   sourceLanguage,
   commonFiles,
   nonCommonFiles,
+  githubfiles,
 }) => {
   // const strings = typeof localization?.translations;
 
@@ -39,6 +41,7 @@ const HomePage: NextPage<IHomePageProps> = ({
         <Home />
       </LanguageProvider> */}
       <Home
+        githubfiles={githubfiles}
         commonFiles={commonFiles}
         nonCommonFiles={nonCommonFiles}
         namespace={localization?.namespace}
@@ -50,9 +53,13 @@ const HomePage: NextPage<IHomePageProps> = ({
 };
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
+  let fileContent;
+
   const sourceLanguage = getAllLocalization("en");
 
   const allLocalization = getAllLocalization(ctx.params?.languageID as string);
+
+  const uniqueProperties = getUniqueProperties("en");
 
   //get all files in translations folder using octokit
 
@@ -68,12 +75,20 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     path: `src/translations/locales/${ctx.params?.languageID}/commons`,
   });
 
+  const githubfiles = [...commonFiles, ...nonCommonFiles];
+
+  if (githubfiles.length > 0) {
+    githubfiles.map((file) => {
+      console.log("file", file);
+    });
+  }
   return {
     props: {
       commonFiles,
       nonCommonFiles,
       localization: allLocalization,
       sourceLanguage,
+      githubfiles,
     },
     revalidate: 20,
   };

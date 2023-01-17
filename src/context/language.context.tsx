@@ -118,8 +118,9 @@ export const getUniqueProperties = (languageID: string) => {
 
   localeNamespace.forEach((namespace) => {
     const strings = locale[namespace];
-
-    Object.assign(translations, strings);
+    const test = Object.assign(locale["about"], namespace);
+    console.log("test", test);
+    translations = { ...translations, strings };
   });
 
   // console.log("translations", translations);
