@@ -8,7 +8,7 @@ import {
   getUniqueProperties,
 } from "../../context/language.context";
 import { Localization, SourceLanguage } from "../../translations/types";
-import { Home } from "../../containers/Home/Home";
+import { HomeTest } from "../../containers/Home/HomeTest";
 import { Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 
@@ -21,15 +21,13 @@ const octokit = new MyOctokit({
 export interface IHomePageProps {
   localization?: Localization;
   sourceLanguage?: SourceLanguage;
-  commonFiles?: any;
-  nonCommonFiles?: any;
+  uniqueProperties?: any;
 }
 
 const HomePage: NextPage<IHomePageProps> = ({
   localization,
   sourceLanguage,
-  commonFiles,
-  nonCommonFiles,
+  uniqueProperties,
 }) => {
   // const strings = typeof localization?.translations;
 
@@ -38,9 +36,8 @@ const HomePage: NextPage<IHomePageProps> = ({
       {/* <LanguageProvider localization={localization}>
         <Home />
       </LanguageProvider> */}
-      <Home
-        commonFiles={commonFiles}
-        nonCommonFiles={nonCommonFiles}
+      <HomeTest
+        uniqueProperties={uniqueProperties}
         namespace={localization?.namespace}
         translations={localization?.translations}
         sourceLanguage={sourceLanguage.translations}
@@ -50,28 +47,57 @@ const HomePage: NextPage<IHomePageProps> = ({
 };
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
+  const commonFiles = [
+    "commons/authModal.ts",
+    "commons/common.ts",
+    "commons/deleteDialog.ts",
+    "commons/donationBox.ts",
+    "commons/followButton.ts",
+    "commons/genres.ts",
+    "commons/imageUploader.ts",
+    "commons/landingPage.ts",
+    "commons/seriesDrawer.ts",
+    "commons/seriesFooter.ts",
+    "commons/seriesReader.ts",
+    "commons/tagForm.ts",
+    "commons/topNav.ts",
+  ];
+
+  const nonCommonFiles = [
+    "about.ts",
+    "account.ts",
+    "consoleChapterList.ts",
+    "consoleCreateChapter.ts",
+    "consoleCreateSeries.ts",
+    "consoleEditChapter.ts",
+    "consoleEditSeries.ts",
+    "consoleSeriesList.ts",
+    "dashboard.ts",
+    "genre.ts",
+    "home.ts",
+    "profile.ts",
+    "search.ts",
+    "settings.ts",
+    "support.ts",
+    "translate.ts",
+    "viewChapter.ts",
+    "viewChapters.ts",
+  ];
+
   const sourceLanguage = getAllLocalization("en");
 
   const allLocalization = getAllLocalization(ctx.params?.languageID as string);
 
-  //get all files in translations folder using octokit
-
-  const { data: nonCommonFiles } = await octokit.rest.repos.getContent({
-    owner: "kyllolive",
-    repo: "nextjs-octokit-demo",
-    path: `src/translations/locales/${ctx.params?.languageID}`,
-  });
-
-  const { data: commonFiles } = await octokit.rest.repos.getContent({
-    owner: "kyllolive",
-    repo: "nextjs-octokit-demo",
-    path: `src/translations/locales/${ctx.params?.languageID}/commons`,
-  });
+  const uniqueProperties = await getUniqueProperties(
+    nonCommonFiles,
+    commonFiles,
+    sourceLanguage,
+    ctx.params?.languageID as string
+  );
 
   return {
     props: {
-      commonFiles,
-      nonCommonFiles,
+      uniqueProperties,
       localization: allLocalization,
       sourceLanguage,
     },

@@ -6,7 +6,14 @@ import defaultStrings from "../translations/locales/en";
 import locales from "../translations/locales";
 import { locales as langLocales } from "../translations/config";
 import { INIT_LOCALIZATION } from "../translations/constant";
+import { Octokit } from "octokit";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
 
+const MyOctokit = Octokit.plugin(createPullRequest);
+
+const octokit = new MyOctokit({
+  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
+});
 /**
  * Language Context
  */
@@ -107,66 +114,72 @@ export const getAllLocalization = (languageID: string) => {
   };
 };
 
-export const getUniqueProperties = (languageID: string) => {
+export const getUniqueProperties = async (
+  nonCommon,
+  common,
+  sourceLanguage,
+  languageID
+) => {
   const lang: Locale = langLocales.includes(languageID as Locale)
     ? (languageID as Locale)
     : "en";
 
-  let translations = {};
-  let locale = locales[lang];
-  let localeNamespace = Object.keys(locale);
+  let commonStrings = [];
+  let nonCommonStrings = [];
+  const translations = sourceLanguage.translations;
 
-  localeNamespace.forEach((namespace) => {
-    const strings = locale[namespace];
+  // get common strings
+  for (const key in nonCommon) {
+    //check if nonCommon[key] exist in target lang
+    const filePath = `src/translations/locales/${lang}/${nonCommon[key]}`;
 
-    Object.assign(translations, strings);
-  });
+    const imports = await import(
+      `../../public/translations/locales/${lang}/${nonCommon[key]}`
+    );
 
-  // console.log("translations", translations);
+    const strings = imports.default;
 
-  return {
-    locale: lang || "en",
-    translations,
-    namespace: "all",
-  };
+    for (let string in strings) {
+      if (
+        !nonCommonStrings.some((item) => item[string]) &&
+        !commonStrings.some((item) => item[string])
+      ) {
+        nonCommonStrings.push({
+          [string]: strings[string],
+          [string + "_SOURCE"]: translations[string],
+          isCommons: false,
+          path: filePath,
+        });
+      }
+    }
+  }
+
+  for (const key in common) {
+    const filePath = `src/translations/locales/${lang}/${common[key]}`;
+    const imports = await import(
+      `../../public/translations/locales/${lang}/${common[key]}`
+    );
+    const strings = imports.default;
+
+    for (let string in strings) {
+      if (
+        !commonStrings.some((item) => item[string]) &&
+        !nonCommonStrings.some((item) => item[string])
+      ) {
+        commonStrings.push({
+          [string]: strings[string],
+          [string + "_SOURCE"]: translations[string],
+          isCommons: true,
+          path: filePath,
+        });
+      }
+    }
+  }
+
+  const unique = [...new Set([...commonStrings, ...nonCommonStrings])];
+
+  return { unique };
 };
-// for (let i = 0; i < localeNamespace.length; i++) {
-//   const strings = locale[localeNamespace[i]];
-//   if (i === 0) {
-//     current = strings
-//   } else {
-//     current = {...current, ...strings}
-
-//   }
-
-//   console.log("im strings", strings);
-//   // Object.entries(strings).forEach(([key, value]) => combined.set(key, value));
-
-//   //check current property and previous property for duplicate properties
-//   // if (i > 0) {
-//   //   const prevStrings = locale[localeNamespace[i - 1]];
-//   //   const prevKeys = Object.keys(prevStrings);
-//   //   const currentKeys = Object.keys(strings);
-//   //   const duplicateKeys = prevKeys.filter((key) => currentKeys.includes(key));
-//   //   console.log("duplicateKeys", duplicateKeys);
-//   // }
-// }
-
-// const entries = Array.from(combined.entries());
-
-// console.log("entries", combined.values());
-// remove duplicate keys from commonStrings and add to nonCommonStrings
-// for (const key in commonStrings) {
-//   if (commonStrings.hasOwnProperty(key)) {
-//     if (nonCommonStrings && nonCommonStrings.hasOwnProperty(key)) {
-//       // delete commonStrings[key];
-//     } else {
-//       nonCommonStrings = { ...nonCommonStrings, [key]: commonStrings[key] };
-//     }
-//   }
-// }
-
-// console.log("commonStrings", commonStrings);
 
 export const LanguageSettingsContext = React.createContext(null as any);
 

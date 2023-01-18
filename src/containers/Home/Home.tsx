@@ -26,7 +26,7 @@ const octokit = new MyOctokit({
 
 export const Home = (props) => {
   const ROWS_PER_PAGE = 10;
-  const { translations, sourceLanguage, namespace } = props;
+  const { translations, sourceLanguage, namespace, uniqueProperties } = props;
   const { push, pathname, query } = useRouter();
   const languageID = query.languageID as string;
   const [rowsPerPage] = React.useState(ROWS_PER_PAGE);
@@ -36,6 +36,7 @@ export const Home = (props) => {
     {
       translationKey: "",
       translationValue: "",
+      path: "",
     },
   ]);
 
@@ -66,21 +67,7 @@ export const Home = (props) => {
   const handlePageChange = (_event: any, page: number) => {
     setPage(page);
   };
-  const handleSubmitOctokit = async () => {
-    const result = await fetch(`/api/create-pr-test`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items,
-        languageID,
-        namespace,
-      }),
-    }).then((res) => res.json());
-
-    console.log("rest", result);
-  };
+  const handleSubmitOctokit = async () => {};
 
   const handleOpenLanguage = () => {
     setIsLanguageModalOpen(true);

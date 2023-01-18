@@ -11,15 +11,24 @@ import {
 import React, { useEffect } from "react";
 
 export const Item = (props) => {
-  const { translationKey, translationValue, source, handleNewItem } = props;
+  const {
+    translationKey,
+    translationValue,
+    source,
+    handleNewItem,
+    isCommon,
+    path,
+  } = props;
   const [originalText, setOriginalText] = React.useState<string>("");
   const [newText, setNewText] = React.useState<string>("");
   const [keyName, setKeyName] = React.useState<string>("");
+  const [propertyPath, setPropertyPath] = React.useState<string>("");
 
   useEffect(() => {
     setOriginalText(translationValue);
     setKeyName(translationKey);
-  }, [translationValue, translationKey]);
+    setPropertyPath(path);
+  }, [translationValue, translationKey, propertyPath]);
 
   const handleClick = () => {
     handleNewItem({
@@ -31,21 +40,21 @@ export const Item = (props) => {
   return (
     <Box>
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <Box margin={"1rem"}>
             <Typography gutterBottom align="center">
               {source}
             </Typography>
           </Box>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <Box margin={"1rem"}>
             <Typography gutterBottom align="center">
               {translationValue}
             </Typography>
           </Box>
         </Grid>
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <Box style={{ margin: "1rem" }}>
             <TextField
               id="outlined-basic"
@@ -62,7 +71,7 @@ export const Item = (props) => {
               }}
             />
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
       <div
         style={{
