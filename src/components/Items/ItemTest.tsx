@@ -9,7 +9,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+// import { makeStyles } from "@mui/styles";
 import EdiText from "react-editext";
 import React, { useEffect, useState } from "react";
 import { Item } from "./Item";
@@ -21,24 +21,24 @@ const octokit = new MyOctokit({
   auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
 });
 
-const useStyles = makeStyles(() => ({
-  textArea: {
-    "& button": {
-      // border: "1px solid blue",
-    },
-    "& input": {
-      // border: "1px solid pink",
-    },
-    "& div": {
-      "&[editext='view-container'] ": {
-        border: "1px solid red",
-      },
-      "&[editext='edit-container'] ": {
-        border: "1px solid blue",
-      },
-    },
-  },
-}));
+// const useStyles = makeStyles(() => ({
+//   textArea: {
+//     "& button": {
+//       // border: "1px solid blue",
+//     },
+//     "& input": {
+//       // border: "1px solid pink",
+//     },
+//     "& div": {
+//       "&[editext='view-container'] ": {
+//         border: "1px solid red",
+//       },
+//       "&[editext='edit-container'] ": {
+//         border: "1px solid blue",
+//       },
+//     },
+//   },
+// }));
 
 export const ItemTest = (props) => {
   const classes = useStyles();
@@ -96,9 +96,11 @@ export const ItemTest = (props) => {
     const content = Buffer.from(getContent.data.content, "base64").toString(
       "utf-8"
     );
-    updatedString = content.replace(regex, `$1: '${newValue}'`);
+    // updatedString = content.replace(regex, `$1: '${newValue}'`);
+
     //convert updated string back to base64
-    const updatedContent = Buffer.from(updatedString).toString("base64");
+
+    // const updatedContent = Buffer.from(updatedString).toString("base64");
 
     //update parent state with path and updated content
     handleNewItem({
