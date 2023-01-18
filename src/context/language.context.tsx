@@ -114,6 +114,56 @@ export const getAllLocalization = (languageID: string) => {
   };
 };
 
+export const getNonCommonPaths = async (nonCommonPaths, languageID: string) => {
+  const lang: Locale = langLocales.includes(languageID as Locale)
+    ? (languageID as Locale)
+    : "en";
+
+  let nonCommons;
+
+  for (const key in nonCommonPaths) {
+    //check if nonCommon[key] exist in target lang
+    const filePath = `src/translations/locales/${lang}/${nonCommonPaths[key]}`;
+
+    const imports = await import(
+      `src/translations/locales/${lang}/${nonCommonPaths[key]}`
+    );
+
+    const strings = imports.default;
+
+    for (let string in strings) {
+      nonCommons = { ...nonCommons, [string]: filePath };
+    }
+  }
+
+  return {
+    nonCommons,
+  };
+};
+
+export const getCommonPaths = async (commonPaths, languageID: string) => {
+  const lang: Locale = langLocales.includes(languageID as Locale)
+    ? (languageID as Locale)
+    : "en";
+
+  let commons;
+
+  for (const key in commonPaths) {
+    const filePath = `src/translations/locales/${lang}/${commonPaths[key]}`;
+    const imports = await import(
+      `src/translations/locales/${lang}/${commonPaths[key]}`
+    );
+    const strings = imports.default;
+
+    for (let string in strings) {
+      commons = { ...commons, [string]: filePath };
+    }
+  }
+  return {
+    commons,
+  };
+};
+
 export const getUniqueProperties = async (
   nonCommon,
   common,

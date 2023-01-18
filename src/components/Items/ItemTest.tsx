@@ -7,11 +7,19 @@ import {
   Container,
   TextField,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import EdiText from "react-editext";
 import React, { useEffect, useState } from "react";
 import { Item } from "./Item";
+import { Octokit } from "octokit";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
+const MyOctokit = Octokit.plugin(createPullRequest);
+
+const octokit = new MyOctokit({
+  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
+});
 
 const useStyles = makeStyles(() => ({
   textArea: {
@@ -35,31 +43,72 @@ const useStyles = makeStyles(() => ({
 export const ItemTest = (props) => {
   const classes = useStyles();
 
-  const { property, handleNewItem } = props;
-  const propertyKeys = Object.keys(property);
-  const translationKey = propertyKeys[0];
-  const translationValue = property[translationKey];
-  const sourceValue = property[propertyKeys[1]];
-  const isCommon = property[propertyKeys[2]];
-  const path = property[propertyKeys[3]];
+  const {
+    handleNewItem,
+    source,
+    translationValue,
+    translationKey,
+    getItemPaths,
+  } = props;
 
   const [newText, setNewText] = React.useState<string>("");
   const [keyName, setKeyName] = React.useState<string>("");
-  const [propertyPath, setPropertyPath] = React.useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setNewText(translationValue);
     setKeyName(translationKey);
-    setPropertyPath(path);
-  }, [translationValue, translationKey, propertyPath]);
+  }, [translationKey, translationValue]);
 
-  const handleSave = (event) => {
+  const handleSave = async (event) => {
+    const item = [
+      {
+        path: "",
+        key: "",
+        content: {
+          //key pair here
+        },
+      },
+    ];
+
     if (event === newText) return;
+    let updatedString;
+    const input = `${keyName}: '${event}'`;
+    const key = input.match(/^.*:/)[0].replace(":", "").trim();
+    const newValue = input.match(/'.*'$/)[0].replace(/'/g, "");
+    const regex = new RegExp(`(${key}): '(.*)'`);
+
+    setIsLoading(true);
     setNewText(event);
+
+    const path = getItemPaths(keyName);
+
+    const getContent = await octokit.rest.repos
+      .getContent({
+        owner: "kyllolive",
+        repo: "nextjs-octokit-demo",
+        path: path,
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    //do some string manipulation
+    const content = Buffer.from(getContent.data.content, "base64").toString(
+      "utf-8"
+    );
+    updatedString = content.replace(regex, `$1: '${newValue}'`);
+    //convert updated string back to base64
+    const updatedContent = Buffer.from(updatedString).toString("base64");
+
+    //update parent state with path and updated content
     handleNewItem({
-      translationKey: keyName,
-      translationValue: newText,
-      path: propertyPath,
+      path: path,
+      content: newValue,
+      key: keyName,
+      contentFromGH: content,
+      // [`${path}`]: updatedContent,
     });
+    setIsLoading(false);
   };
   return (
     <>
@@ -68,7 +117,7 @@ export const ItemTest = (props) => {
           <Grid item xs={6}>
             <Box margin={"1rem"}>
               <Typography gutterBottom align="center">
-                {sourceValue}
+                {source}
               </Typography>
             </Box>
           </Grid>
@@ -85,15 +134,17 @@ export const ItemTest = (props) => {
               {/* <Typography gutterBottom align="center">
                 {translationValue}
               </Typography> */}
-
-              <EdiText
-                className={classes.textArea}
-                value={translationValue}
-                type="text"
-                onSave={(event) => {
-                  handleSave(event);
-                }}
-              />
+              {!isLoading && (
+                <EdiText
+                  className={classes.textArea}
+                  value={newText}
+                  type="text"
+                  onSave={(event) => {
+                    handleSave(event);
+                  }}
+                />
+              )}
+              {isLoading && <CircularProgress />}
             </Box>
           </Grid>
           {/* <Grid item xs={4}>

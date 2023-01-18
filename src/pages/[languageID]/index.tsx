@@ -6,6 +6,8 @@ import {
   LanguageProvider,
   getAllLocalization,
   getUniqueProperties,
+  getCommonPaths,
+  getNonCommonPaths,
 } from "../../context/language.context";
 import { Localization, SourceLanguage } from "../../translations/types";
 import { HomeTest } from "../../containers/Home/HomeTest";
@@ -22,23 +24,25 @@ export interface IHomePageProps {
   localization?: Localization;
   sourceLanguage?: SourceLanguage;
   uniqueProperties?: any;
+  nonCommonPaths?: any;
+  commonPaths?: any;
 }
 
 const HomePage: NextPage<IHomePageProps> = ({
   localization,
   sourceLanguage,
-  uniqueProperties,
+  // uniqueProperties,
+  nonCommonPaths,
+  commonPaths,
 }) => {
-  // const strings = typeof localization?.translations;
-
   return (
     <>
       {/* <LanguageProvider localization={localization}>
         <Home />
       </LanguageProvider> */}
       <HomeTest
-        uniqueProperties={uniqueProperties}
-        namespace={localization?.namespace}
+        nonCommonPaths={nonCommonPaths}
+        commonPaths={commonPaths}
         translations={localization?.translations}
         sourceLanguage={sourceLanguage.translations}
       />
@@ -88,16 +92,28 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 
   const allLocalization = getAllLocalization(ctx.params?.languageID as string);
 
-  const uniqueProperties = await getUniqueProperties(
-    nonCommonFiles,
+  const commonPaths = await getCommonPaths(
     commonFiles,
-    sourceLanguage,
     ctx.params?.languageID as string
   );
 
+  const nonCommonPaths = await getNonCommonPaths(
+    nonCommonFiles,
+    ctx.params?.languageID as string
+  );
+
+  // const uniqueProperties = await getUniqueProperties(
+  //   nonCommonFiles,
+  //   commonFiles,
+  //   sourceLanguage,
+  //   ctx.params?.languageID as string
+  // );
+
   return {
     props: {
-      uniqueProperties,
+      // uniqueProperties,
+      commonPaths: commonPaths.commons,
+      nonCommonPaths: nonCommonPaths.nonCommons,
       localization: allLocalization,
       sourceLanguage,
     },
