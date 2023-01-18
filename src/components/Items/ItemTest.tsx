@@ -41,7 +41,7 @@ const octokit = new MyOctokit({
 // }));
 
 export const ItemTest = (props) => {
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const {
     handleNewItem,
@@ -138,7 +138,7 @@ export const ItemTest = (props) => {
               </Typography> */}
               {!isLoading && (
                 <EdiText
-                  className={classes.textArea}
+                  // className={classes.textArea}
                   value={newText}
                   type="text"
                   onSave={(event) => {
