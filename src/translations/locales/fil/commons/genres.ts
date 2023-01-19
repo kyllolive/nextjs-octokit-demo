@@ -1,5 +1,5 @@
 const genres = {
-  GENRE_ALL: 'Lahat',
+  GENRE_ALL: 'sLahat',
   GENRE_ACTION: 'Aksyon',
   GENRE_ADVENTURE: 'Pakikipagsapalaran',
   GENRE_COMEDY: 'Komedya',
