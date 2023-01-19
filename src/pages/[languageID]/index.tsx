@@ -2,10 +2,7 @@ import React from "react";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { locales } from "../../translations/config";
 import {
-  getLocalizationProps,
-  LanguageProvider,
   getAllLocalization,
-  getUniqueProperties,
   getCommonPaths,
   getNonCommonPaths,
 } from "../../context/language.context";

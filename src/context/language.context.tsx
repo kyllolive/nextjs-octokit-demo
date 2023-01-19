@@ -2,7 +2,6 @@ import React from "react";
 import { useRouter } from "next/router";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { isLocale, Localization, Locale } from "../translations/types";
-import defaultStrings from "../translations/locales/en";
 import locales from "../translations/locales";
 import { locales as langLocales } from "../translations/config";
 import { INIT_LOCALIZATION } from "../translations/constant";
