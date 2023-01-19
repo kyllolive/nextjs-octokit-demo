@@ -139,6 +139,7 @@ export const HomeTest = (props) => {
 
       if (pr.status === 201) {
         setIsLoading(false);
+        alert("Pull request created successfully");
         push("/");
         return pr;
       }
