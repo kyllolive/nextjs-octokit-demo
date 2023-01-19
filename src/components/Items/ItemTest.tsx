@@ -9,6 +9,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 // import { makeStyles } from "@mui/styles";
 import EdiText from "react-editext";
 import React, { useEffect, useState } from "react";
@@ -40,6 +41,23 @@ const octokit = new MyOctokit({
 //   },
 // }));
 
+const StyledEditText = styled(EdiText)(() => ({
+  "& button": {
+    // border: "1px solid blue",
+  },
+  "& input": {
+    // border: "1px solid pink",
+  },
+  "& div": {
+    "&[editext='view-container'] ": {
+      border: "1px solid red",
+    },
+    "&[editext='edit-container'] ": {
+      border: "1px solid blue",
+    },
+  },
+}));
+
 export const ItemTest = (props) => {
   // const classes = useStyles();
 
@@ -61,27 +79,12 @@ export const ItemTest = (props) => {
   }, [translationKey, translationValue]);
 
   const handleSave = async (event) => {
-    const item = [
-      {
-        path: "",
-        key: "",
-        content: {
-          //key pair here
-        },
-      },
-    ];
-
     if (event === newText) return;
-    let updatedString;
     const input = `${keyName}: '${event}'`;
-    const key = input.match(/^.*:/)[0].replace(":", "").trim();
     const newValue = input.match(/'.*'$/)[0].replace(/'/g, "");
-    const regex = new RegExp(`(${key}): '(.*)'`);
-
+    const path = getItemPaths(keyName);
     setIsLoading(true);
     setNewText(event);
-
-    const path = getItemPaths(keyName);
 
     const getContent = await octokit.request(
       "GET /repos/{owner}/{repo}/contents/{path}",
@@ -91,25 +94,18 @@ export const ItemTest = (props) => {
         path: path,
       }
     );
-    // //do some string manipulation
+
+    console.log("getContent", getContent);
 
     const content = Buffer.from(getContent.data["content"], "base64").toString(
       "utf-8"
     );
 
-    // updatedString = content.replace(regex, `$1: '${newValue}'`);
-
-    //convert updated string back to base64
-
-    // const updatedContent = Buffer.from(updatedString).toString("base64");
-
-    //update parent state with path and updated content
     handleNewItem({
       path: path,
       content: newValue,
       key: keyName,
       contentFromGH: content,
-      // [`${path}`]: updatedContent,
     });
     setIsLoading(false);
   };
@@ -138,7 +134,7 @@ export const ItemTest = (props) => {
                 {translationValue}
               </Typography> */}
               {!isLoading && (
-                <EdiText
+                <StyledEditText
                   // className={classes.textArea}
                   value={newText}
                   type="text"
