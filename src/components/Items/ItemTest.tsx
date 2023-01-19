@@ -93,9 +93,12 @@ export const ItemTest = (props) => {
         console.log(err);
       });
     //do some string manipulation
+
+    // eslint-disable-next-line no-use-before-define
     const content = Buffer.from(getContent.data.content, "base64").toString(
       "utf-8"
     );
+
     // updatedString = content.replace(regex, `$1: '${newValue}'`);
 
     //convert updated string back to base64
