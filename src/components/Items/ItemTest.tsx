@@ -83,19 +83,17 @@ export const ItemTest = (props) => {
 
     const path = getItemPaths(keyName);
 
-    const getContent = await octokit.rest.repos
-      .getContent({
+    const getContent = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
         owner: "kyllolive",
         repo: "nextjs-octokit-demo",
         path: path,
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    //do some string manipulation
+      }
+    );
+    // //do some string manipulation
 
-    // eslint-disable-next-line no-use-before-define
-    const content = Buffer.from(getContent.data.content, "base64").toString(
+    const content = Buffer.from(getContent.data["content"], "base64").toString(
       "utf-8"
     );
 
