@@ -8,14 +8,6 @@ import {
 } from "../../context/language.context";
 import { Localization, SourceLanguage } from "../../translations/types";
 import { HomeTest } from "../../containers/Home/HomeTest";
-import { Octokit } from "octokit";
-import { createPullRequest } from "octokit-plugin-create-pull-request";
-
-const MyOctokit = Octokit.plugin(createPullRequest);
-
-const octokit = new MyOctokit({
-  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
-});
 
 export interface IHomePageProps {
   localization?: Localization;
@@ -28,15 +20,12 @@ export interface IHomePageProps {
 const HomePage: NextPage<IHomePageProps> = ({
   localization,
   sourceLanguage,
-  // uniqueProperties,
+
   nonCommonPaths,
   commonPaths,
 }) => {
   return (
     <>
-      {/* <LanguageProvider localization={localization}>
-        <Home />
-      </LanguageProvider> */}
       <HomeTest
         nonCommonPaths={nonCommonPaths}
         commonPaths={commonPaths}
@@ -98,13 +87,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     nonCommonFiles,
     ctx.params?.languageID as string
   );
-
-  // const uniqueProperties = await getUniqueProperties(
-  //   nonCommonFiles,
-  //   commonFiles,
-  //   sourceLanguage,
-  //   ctx.params?.languageID as string
-  // );
 
   return {
     props: {

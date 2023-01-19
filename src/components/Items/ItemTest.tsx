@@ -1,66 +1,43 @@
-import {
-  Grid,
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Container,
-  TextField,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import { Grid, Box, Typography, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
-// import { makeStyles } from "@mui/styles";
 import EdiText from "react-editext";
 import React, { useEffect, useState } from "react";
-import { Item } from "./Item";
 import { Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
+
 const MyOctokit = Octokit.plugin(createPullRequest);
 
 const octokit = new MyOctokit({
   auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
 });
 
-// const useStyles = makeStyles(() => ({
-//   textArea: {
-//     "& button": {
-//       // border: "1px solid blue",
-//     },
-//     "& input": {
-//       // border: "1px solid pink",
-//     },
-//     "& div": {
-//       "&[editext='view-container'] ": {
-//         border: "1px solid red",
-//       },
-//       "&[editext='edit-container'] ": {
-//         border: "1px solid blue",
-//       },
-//     },
-//   },
-// }));
-
 const StyledEditText = styled(EdiText)(() => ({
   "& button": {
-    // border: "1px solid blue",
+    borderRadius: "5px",
+
+    "&[editext='edit-button']": {
+      // border: "1px solid blue",
+    },
   },
   "& input": {
     // border: "1px solid pink",
+    fontSize: "100rem",
   },
   "& div": {
     "&[editext='view-container'] ": {
-      border: "1px solid red",
+      // border: "1px solid red",
+      // width: "150px",
     },
     "&[editext='edit-container'] ": {
-      border: "1px solid blue",
+      // border: "1px solid blue",
+    },
+    "&[editext='main-container'] ": {
+      // border: "1px solid red",
     },
   },
 }));
 
 export const ItemTest = (props) => {
-  // const classes = useStyles();
-
   const {
     handleNewItem,
     source,
@@ -95,19 +72,20 @@ export const ItemTest = (props) => {
       }
     );
 
-    console.log("getContent", getContent);
+    if (getContent.status === 200) {
+      const content = Buffer.from(
+        getContent.data["content"],
+        "base64"
+      ).toString("utf-8");
 
-    const content = Buffer.from(getContent.data["content"], "base64").toString(
-      "utf-8"
-    );
-
-    handleNewItem({
-      path: path,
-      content: newValue,
-      key: keyName,
-      contentFromGH: content,
-    });
-    setIsLoading(false);
+      handleNewItem({
+        path: path,
+        content: newValue,
+        key: keyName,
+        contentFromGH: content,
+      });
+      setIsLoading(false);
+    }
   };
   return (
     <>
@@ -115,7 +93,14 @@ export const ItemTest = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <Box margin={"1rem"}>
-              <Typography gutterBottom align="center">
+              <Typography
+                gutterBottom
+                align="center"
+                style={{
+                  fontSize: "1rem",
+                  fontFamily: "monospace",
+                }}
+              >
                 {source}
               </Typography>
             </Box>
@@ -124,58 +109,54 @@ export const ItemTest = (props) => {
             <Box
               style={{
                 margin: "1rem",
-                width: "100%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              {/* <Typography gutterBottom align="center">
-                {translationValue}
-              </Typography> */}
               {!isLoading && (
-                <StyledEditText
-                  // className={classes.textArea}
-                  value={newText}
-                  type="text"
-                  onSave={(event) => {
-                    handleSave(event);
+                <Box
+                  style={{
+                    width: "300px",
+
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <StyledEditText
+                    editOnViewClick={true}
+                    submitOnEnter
+                    cancelOnEscape
+                    submitOnUnfocus
+                    startEditingOnFocus
+                    viewProps={{
+                      style: {
+                        outline: "none",
+                        minWidth: "150px",
+                        fontSize: "1rem",
+                        fontFamily: "monospace",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        outline: "none",
+                        minWidth: "150px",
+                      },
+                      rows: 4,
+                    }}
+                    type="textarea"
+                    value={newText}
+                    onSave={(event) => {
+                      handleSave(event);
+                    }}
+                  />
+                </Box>
               )}
               {isLoading && <CircularProgress />}
             </Box>
           </Grid>
-          {/* <Grid item xs={4}>
-          <Box style={{ margin: "1rem" }}>
-            <TextField
-              id="outlined-basic"
-              label="Your Translation"
-              variant="outlined"
-              value={newText}
-              type="text"
-              onChange={(event) => {
-                setNewText(event.target.value);
-                // handleNewItem({
-                //   translationKey: keyName,
-                //   translationValue: event.target.value,
-                // })
-              }}
-            />
-          </Box>
-        </Grid> */}
         </Grid>
-        {/* <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Button variant="outlined" onClick={handleClick}>
-            Confirm
-          </Button>
-        </div> */}
       </Box>
     </>
   );
