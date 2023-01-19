@@ -70,7 +70,7 @@ const translate = {
   LABEL_HISTORY: 'History',
   LABEL_MODIFIED_BY: 'modified by',
   LABEL_LATEST: 'Latest',
-  LABEL_LOAD: 'Load',
+  LABEL_LOAD: 'Load Test',
   LABEL_PUBLISH: 'Publish',
   //Credits Tab
   LABEL_CONTRIBUTORS: 'Contributors',

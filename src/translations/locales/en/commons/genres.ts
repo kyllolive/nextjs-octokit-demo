@@ -8,7 +8,7 @@ const genres = {
   GENRE_DRAMA: 'Drama',
   GENRE_FANTASY: 'Fantasy',
   GENRE_GAME: 'Game',
-  GENRE_HISTORICAL: 'Historical',
+  GENRE_HISTORICAL: 'Historical Testuing',
   GENRE_HORROR: 'Horror',
   GENRE_KIDS: 'Kids',
   GENRE_LGBTQ: 'LGBTQ+',
@@ -32,7 +32,7 @@ const genres = {
   GENRE_SUPER_POWER: 'Super Power',
   GENRE_SUPERNATURAL: 'Supernatural',
   GENRE_TRAGEDY: 'Tragedy',
-  GENRE_VAMPIRE: 'Vampire',
+  GENRE_VAMPIRE: 'Vampire TEst',
 };
 
 export default genres;
