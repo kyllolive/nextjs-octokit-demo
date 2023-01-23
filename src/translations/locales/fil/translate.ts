@@ -73,7 +73,7 @@ const translate = {
   LABEL_LOAD: 'Magkarga',
   LABEL_PUBLISH: 'I-publish',
   //Credits Tab
-  LABEL_CONTRIBUTORS: 'Mga kontribyutor',
+  LABEL_CONTRIBUTORS: 'Mga kontribyutors',
   LABEL_NO_CONTRIBUTORS: 'Walang mga Contributor',
 
   //Change
