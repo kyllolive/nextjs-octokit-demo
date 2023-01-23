@@ -17,7 +17,7 @@ const profile = {
   LABEL_UNABLE_SAVE_CHANGES: 'Uh oh! We were unable to save your changes',
   LABEL_ADD_ANOTHER: 'Add Another',
   LABEL_EDIT_PROFILE: 'Edit Profile',
-  LABEL_JOINED_DATE: 'Joined date',
+  LABEL_JOINED_DATE: 'Joined dates',
   LABEL_UPDATE_PROFILE_INFORMATION: 'Quick update profile information',
   LABEL_CHANGE_PROFILE_PICTURE: 'Change profile picture',
   LABEL_ERROR_NEW_PROFILE: 'Oops! We were unable to save your new profile',
