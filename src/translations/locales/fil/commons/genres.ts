@@ -2,7 +2,7 @@ const genres = {
   GENRE_ALL: 'Lahat',
   GENRE_ACTION: 'Aksyon',
   GENRE_ADVENTURE: 'Pakikipagsapalaran',
-  GENRE_COMEDY: 'Komedya',
+  GENRE_COMEDY: 'sKomedya',
   GENRE_CYBERPUNK: 'Cyberpunk',
   GENRE_DEMONS: 'Mga demonyo',
   GENRE_DRAMA: 'Drama',
