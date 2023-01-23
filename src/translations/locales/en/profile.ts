@@ -19,7 +19,7 @@ const profile = {
   LABEL_EDIT_PROFILE: 'Edit Profile',
   LABEL_JOINED_DATE: 'Joined date',
   LABEL_UPDATE_PROFILE_INFORMATION: 'Quick update profile information',
-  LABEL_CHANGE_PROFILE_PICTURE: 'Change profile picture',
+  LABEL_CHANGE_PROFILE_PICTURE: 'Change profile pisscture',
   LABEL_ERROR_NEW_PROFILE: 'Oops! We were unable to save your new profile',
   LABEL_ERROR_NEW_COVER: 'Oops! We were unable to save your new cover',
   LABEL_ERROR_UPLOAD_COVER: 'Oops! We were unable to upload your cover',
