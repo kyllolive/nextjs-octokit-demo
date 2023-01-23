@@ -2,15 +2,7 @@ import { Grid, Box, Typography, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EdiText from "react-editext";
 import React, { useEffect, useState } from "react";
-import { Octokit } from "octokit";
-import { createPullRequest } from "octokit-plugin-create-pull-request";
-
-const MyOctokit = Octokit.plugin(createPullRequest);
-
-const octokit = new MyOctokit({
-  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
-});
-
+import { octokitConstants } from "../../constants/octokit.constants";
 const StyledEditText = styled(EdiText)(() => ({
   "& button": {
     borderRadius: "5px",
@@ -39,6 +31,7 @@ const StyledEditText = styled(EdiText)(() => ({
 
 export const ItemTest = (props) => {
   const {
+    octokit,
     handleNewItem,
     source,
     translationValue,
@@ -66,8 +59,8 @@ export const ItemTest = (props) => {
     const getContent = await octokit.request(
       "GET /repos/{owner}/{repo}/contents/{path}",
       {
-        owner: "kyllolive",
-        repo: "nextjs-octokit-demo",
+        owner: octokitConstants.owner,
+        repo: octokitConstants.repo,
         path: path,
       }
     );

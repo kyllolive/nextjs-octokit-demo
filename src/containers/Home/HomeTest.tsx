@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Card,
   CardContent,
@@ -14,11 +15,10 @@ import moment from "moment";
 import { ItemTest } from "../../components/Items/ItemTest";
 import { Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
-import React from "react";
+import { octokitConstants } from "../../constants/octokit.constants";
 import { useRouter } from "next/router";
 import { Language } from "../../components/Language/Language";
 import randomWords from "random-words";
-
 const MyOctokit = Octokit.plugin(createPullRequest);
 
 const octokit = new MyOctokit({
@@ -118,14 +118,14 @@ export const HomeTest = (props) => {
       }
 
       const pr = await octokit.createPullRequest({
-        owner: "kyllolive",
-        repo: "nextjs-octokit-demo",
+        owner: octokitConstants.owner,
+        repo: octokitConstants.repo,
         title: `update translations ${moment().format(
           "MMMM Do YYYY, h:mm:ss a"
         )} `,
-        body: "Update translation",
+        body: octokitConstants.body,
         head: `update-translation-${randomWords(3).join("")}`,
-        base: "main",
+        base: octokitConstants.base,
         update: false,
         changes: [
           {
@@ -242,8 +242,7 @@ export const HomeTest = (props) => {
                 <Grid container spacing={2} key={i}>
                   <Grid item xs={12}>
                     <ItemTest
-                      getCommonPaths
-                      nonCommonPaths
+                      octokit={octokit}
                       source={sourceLanguage[key]}
                       translationValue={translations[key]}
                       translationKey={key}
@@ -258,10 +257,12 @@ export const HomeTest = (props) => {
               <Grid container spacing={2} key={i}>
                 <Grid item xs={12}>
                   <ItemTest
+                    octokit={octokit}
                     source={sourceLanguage[item]}
                     translationValue={translations[item]}
                     translationKey={item}
                     handleNewItem={handleNewItem}
+                    getItemPaths={getItemPaths}
                   />
                 </Grid>
               </Grid>

@@ -8,20 +8,10 @@ import { locales as langLocales } from "../translations/config";
 import { INIT_LOCALIZATION } from "../translations/constant";
 import { Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
-
-const MyOctokit = Octokit.plugin(createPullRequest);
-
-const octokit = new MyOctokit({
-  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
-});
+import { commonFiles, nonCommonFiles } from "../constants/files.constants";
 /**
  * Language Context
  */
-
-// interface ContextProps {
-//   readonly localization: Localization;
-//   readonly setLocale: (localization: Localization) => void;
-// }
 
 export const LanguageContext = React.createContext<any>({
   localization: {
@@ -114,19 +104,19 @@ export const getAllLocalization = (languageID: string) => {
   };
 };
 
-export const getNonCommonPaths = async (nonCommonPaths, languageID: string) => {
+export const getNonCommonPaths = async (languageID: string) => {
   const lang: Locale = langLocales.includes(languageID as Locale)
     ? (languageID as Locale)
     : "en";
 
   let nonCommons;
 
-  for (const key in nonCommonPaths) {
+  for (const key in nonCommonFiles) {
     //check if nonCommon[key] exist in target lang
-    const filePath = `src/translations/locales/${lang}/${nonCommonPaths[key]}`;
+    const filePath = `src/translations/locales/${lang}/${nonCommonFiles[key]}`;
 
     const imports = await import(
-      `src/translations/locales/${lang}/${nonCommonPaths[key]}`
+      `src/translations/locales/${lang}/${nonCommonFiles[key]}`
     );
 
     const strings = imports.default;
@@ -141,17 +131,17 @@ export const getNonCommonPaths = async (nonCommonPaths, languageID: string) => {
   };
 };
 
-export const getCommonPaths = async (commonPaths, languageID: string) => {
+export const getCommonPaths = async (languageID: string) => {
   const lang: Locale = langLocales.includes(languageID as Locale)
     ? (languageID as Locale)
     : "en";
 
   let commons;
 
-  for (const key in commonPaths) {
-    const filePath = `src/translations/locales/${lang}/${commonPaths[key]}`;
+  for (const key in commonFiles) {
+    const filePath = `src/translations/locales/${lang}/${commonFiles[key]}`;
     const imports = await import(
-      `src/translations/locales/${lang}/${commonPaths[key]}`
+      `src/translations/locales/${lang}/${commonFiles[key]}`
     );
     const strings = imports.default;
 
