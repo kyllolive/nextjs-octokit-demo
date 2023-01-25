@@ -7,7 +7,7 @@ const genres = {
   GENRE_DEMONS: 'Demons',
   GENRE_DRAMA: 'Drama',
   GENRE_FANTASY: 'Fantasy',
-  GENRE_GAME: 'Game',
+  GENRE_GAME: 'sGame',
   GENRE_HISTORICAL: 'Historical',
   GENRE_HORROR: 'Horror',
   GENRE_KIDS: 'Kids',
