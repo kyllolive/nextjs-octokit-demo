@@ -33,5 +33,5 @@ jobs:
           head: "my-feature"
           base: "main"
           body: "This pull request adds a translations folder to the target repository."
-          repository: target-user/target-repo
+          repository: kyllolive/epico-translations
           token: ${{ secrets.MY_PAT }}
