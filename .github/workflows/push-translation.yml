@@ -19,7 +19,7 @@ jobs:
         with:
           source_file: "src/translations"
           destination_repo: "kyllolive/epico-translations"
-          destination_folder: "test-dir"
+          destination_folder: "src/translations"
           user_email: "kyllolive@gmail.com"
           user_name: "kyllolive"
           commit_message: "A custom message for the commit"

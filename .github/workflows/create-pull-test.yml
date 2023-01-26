@@ -1,0 +1,20 @@
+name: Pull Request Action
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_PAT }}
+          script: |
+
+            const createPullRequest = require('octokit-plugin-create-pull-request')
+
+            conslle.log(createPullRequest)
