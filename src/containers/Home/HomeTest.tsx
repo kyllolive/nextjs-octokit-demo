@@ -19,6 +19,7 @@ import { octokitConstants } from "../../constants/octokit.constants";
 import { useRouter } from "next/router";
 import { Language } from "../../components/Language/Language";
 import randomWords from "random-words";
+
 const MyOctokit = Octokit.plugin(createPullRequest);
 
 const octokit = new MyOctokit({
@@ -116,7 +117,7 @@ export const HomeTest = (props) => {
           [path]: updatedContent,
         };
       }
-
+      console.log(prObject);
       const pr = await octokit.createPullRequest({
         owner: octokitConstants.owner,
         repo: octokitConstants.repo,
