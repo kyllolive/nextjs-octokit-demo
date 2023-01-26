@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - run: npm ci
+      # or one-off:
+      - run: npm install octokit-plugin-create-pull-request
       - name: Create Pull Request
         uses: actions/github-script@v6
         with:
