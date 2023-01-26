@@ -23,4 +23,6 @@ jobs:
 
             const createPullRequest = require('octokit-plugin-create-pull-request')
 
-            console.log(createPullRequest)
+            const octokit = octokit.github.plugin(createPullRequest)
+
+            console.log('hoello', octokit)
