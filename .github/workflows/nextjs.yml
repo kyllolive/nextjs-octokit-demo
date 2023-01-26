@@ -74,8 +74,6 @@ jobs:
           NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NEXT_PUBLIC_GITHUB_TOKEN }}
       - name: Static HTML export with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next export
-        env:
-          NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NEXT_PUBLIC_GITHUB_TOKEN }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
@@ -91,6 +89,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        env:
-          NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NEXT_PUBLIC_GITHUB_TOKEN }}
         uses: actions/deploy-pages@v1
