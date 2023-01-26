@@ -6,32 +6,20 @@ on:
       - main
 
 jobs:
-  create_pr:
+  copy-file:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Checkout target repository
-        uses: actions/checkout@v2
+      - name: Pushes test file
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.MY_PAT }}
         with:
-          repository: kyllolive/epico-translations
-          ref: main
-          token: ${{ secrets.MY_PAT }}
-
-      - name: Copy translations folder
-        run: cp -R ${ GITHUB_WORKSPACE }src/translations/* epico-translations/commons/
-
-      - name: Push changes
-        run: git add . && git commit -m "Add translations" && git push origin my-feature
-
-      - name: Create Pull Request
-        uses: actions/create-pull-request@v4
-        with:
-          title: "Add translations"
-          head: "my-feature"
-          base: "main"
-          body: "This pull request adds a translations folder to the target repository."
-          repository: kyllolive/epico-translations
-          token: ${{ secrets.MY_PAT }}
+          source_file: "src/translations/*"
+          destination_repo: "kyllolive/epico-translations"
+          destination_folder: "test-dir"
+          user_email: "kyllolive@gmail.com"
+          user_name: "kyllolive"
+          commit_message: "A custom message for the commit"
