@@ -23,4 +23,4 @@ jobs:
 
             const createPullRequest = require('octokit-plugin-create-pull-request')
 
-            conslle.log(createPullRequest)
+            console.log(createPullRequest)
