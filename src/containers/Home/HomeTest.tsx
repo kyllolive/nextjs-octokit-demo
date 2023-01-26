@@ -26,6 +26,7 @@ const octokit = new MyOctokit({
 });
 
 export const HomeTest = (props) => {
+  console.log("env", process.env.NEXT_PUBLIC_GITHUB_TOKEN);
   const ROWS_PER_PAGE = 10;
   const { translations, sourceLanguage, commonPaths, nonCommonPaths } = props;
   const { query, push } = useRouter();
