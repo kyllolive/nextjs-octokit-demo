@@ -17,7 +17,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.MY_PAT }}
         with:
-          source_file: "src/translations/*"
+          source_file: "src/translations"
           destination_repo: "kyllolive/epico-translations"
           destination_folder: "test-dir"
           user_email: "kyllolive@gmail.com"
