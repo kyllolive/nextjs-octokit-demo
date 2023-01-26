@@ -1,28 +1,37 @@
-name: Pull Request Action
+name: Create PR
+
 on:
   push:
     branches:
       - main
 
 jobs:
-  create-pull-request:
+  create_pr:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
           node-version: 14
-      - run: npm ci
-      # or one-off:
-      - run: npm install octokit-plugin-create-pull-request
-      - name: Create Pull Request
-        uses: actions/github-script@v6
+
+      - name: Update translations
+        run: |
+          git remote add target https://github.com/kyllolive/epico-translations
+          git fetch target
+          git checkout -b update-translations target/main
+          cp -r translations/* epico-translations/translations/
+          git add -A
+          git commit -m "Update translations"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
         with:
-          github-token: ${{ secrets.MY_PAT }}
-          script: |
-
-            const createPullRequest = require('octokit-plugin-create-pull-request')
-
-            const octokit = octokit.github.plugin(createPullRequest)
-
-            console.log('hoello', octokit)
+          title: Update translations
+          head: update-translations
+          base: main
+          labels: translations
+          token: ${{ secrets.MY_PAT }}
