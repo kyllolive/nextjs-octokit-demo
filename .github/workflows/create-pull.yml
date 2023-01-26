@@ -21,7 +21,7 @@ jobs:
           token: ${{ secrets.MY_PAT }}
 
       - name: Copy translations folder
-        run: cp -R ${{GITHUB_WORKSPACE}}src/translations/* epico-translations/commons/
+        run: cp -R ${ GITHUB_WORKSPACE }src/translations/* epico-translations/commons/
 
       - name: Push changes
         run: git add . && git commit -m "Add translations" && git push origin my-feature
