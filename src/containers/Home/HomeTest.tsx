@@ -19,6 +19,7 @@ import { octokitConstants } from "../../constants/octokit.constants";
 import { useRouter } from "next/router";
 import { Language } from "../../components/Language/Language";
 import randomWords from "random-words";
+import axios from "axios";
 
 const MyOctokit = Octokit.plugin(createPullRequest);
 
@@ -28,7 +29,8 @@ const octokit = new MyOctokit({
 
 export const HomeTest = (props) => {
   const ROWS_PER_PAGE = 10;
-  const { translations, sourceLanguage, commonPaths, nonCommonPaths } = props;
+  const { translations, sourceLanguage, commonPaths, nonCommonPaths, token } =
+    props;
   const { query, push } = useRouter();
   const languageID = query.languageID as string;
   const [rowsPerPage] = React.useState(ROWS_PER_PAGE);
@@ -38,6 +40,10 @@ export const HomeTest = (props) => {
   const [items, setItems] = React.useState([
     { path: "", content: "", key: "", contentFromGH: "" },
   ]);
+
+  const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+
+  const baseURL = "https://api.github.com";
 
   const searchString = Object.keys(translations).filter((key) => {
     return translations[key].toLowerCase().includes(searchField.toLowerCase());
@@ -90,11 +96,117 @@ export const HomeTest = (props) => {
     return files;
   };
 
+  // function to get the SHA of the base branch
+  const getBaseBranchSha = async (owner, repo, baseBranch) => {
+    try {
+      const response = await axios.get(
+        `${baseURL}/repos/${owner}/${repo}/branches/${baseBranch}`
+      );
+      return response.data.commit.sha;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to update files
+  const updateFiles = async (owner, repo, branch, files, baseBranchSha) => {
+    try {
+      const promises = files.map(async ({ path, content }) => {
+        const response = await axios.put(
+          `${baseURL}/repos/${owner}/${repo}/contents/${path}`,
+          {
+            message: `Update ${path}`,
+            content: content,
+            branch,
+            sha: baseBranchSha,
+          }
+        );
+        return response.data;
+      });
+      return await Promise.all(promises);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const createPullRequest = async (owner, repo, title, body, head, base) => {
+    try {
+      const response = await axios.post(
+        `${baseURL}/repos/${owner}/${repo}/pulls`,
+        {
+          title,
+          body,
+          head,
+          base,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const main = async (files) => {
+    const owner = octokitConstants.owner;
+    const repo = octokitConstants.repo;
+    const baseBranch = "main";
+    const title = "Update translations";
+    const body = "Updating the translations files";
+
+    // create axios instance with necessary authentication header
+    const instance = axios.create({
+      headers: {
+        Authorization: `Token ${GITHUB_TOKEN}`,
+      },
+    });
+
+    // get the SHA of the base branch
+    const baseBranchSha = await getBaseBranchSha(owner, repo, baseBranch);
+
+    // generate a unique branch name
+    const branch = `update-translations-${Date.now()}`;
+
+    // create a new branch
+    const newBranch = await instance.post(
+      `${baseURL}/repos/${owner}/${repo}/git/refs`,
+      {
+        ref: `refs/heads/${branch}`,
+        sha: baseBranchSha,
+      }
+    );
+
+    console.log("New branch created: ", newBranch.data);
+
+    // update the files in the new branch
+    const updatedFiles = await updateFiles(
+      owner,
+      repo,
+      branch,
+      files,
+      baseBranchSha
+    );
+
+    console.log("Updated files: ", updatedFiles);
+
+    // create a pull request
+    const pullRequest = await createPullRequest(
+      owner,
+      repo,
+      title,
+      body,
+      branch,
+      baseBranch
+    );
+
+    console.log("Pull request created: ");
+  };
+
   const handleSubmitOctokit = async () => {
     setIsLoading(true);
     const files = prepareFiles(items);
+    let prArr = [];
+    let prObject;
     if (files) {
-      let prObject;
       for (const key in files) {
         const path = key;
         const item = files[key];
@@ -116,35 +228,18 @@ export const HomeTest = (props) => {
           ...prObject,
           [path]: updatedContent,
         };
-      }
-      console.log(prObject);
-      const pr = await octokit.createPullRequest({
-        owner: octokitConstants.owner,
-        repo: octokitConstants.repo,
-        title: `update translations ${moment().format(
-          "MMMM Do YYYY, h:mm:ss a"
-        )} `,
-        body: octokitConstants.body,
-        head: `update-translation-${randomWords(3).join("")}`,
-        base: octokitConstants.base,
-        update: false,
-        changes: [
-          {
-            files: prObject,
-            commit: `update translations ${moment().format(
-              "MMMM Do YYYY, h:mm:ss a"
-            )} `,
-          },
-        ],
-      });
-
-      if (pr.status === 201) {
-        setIsLoading(false);
-        alert("Pull request created successfully");
-        push("/");
-        return pr;
+        prArr.push({
+          path: path,
+          content: updatedContent,
+        });
       }
     }
+
+    console.log("prArr", prArr);
+
+    const result = await main(prArr);
+
+    console.log("result", result);
   };
 
   return (

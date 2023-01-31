@@ -8,6 +8,7 @@ import {
 } from "../../context/language.context";
 import { Localization, SourceLanguage } from "../../translations/types";
 import { HomeTest } from "../../containers/Home/HomeTest";
+import { Dialog, Box, Typography, Button, DialogTitle } from "@mui/material";
 
 export interface IHomePageProps {
   localization?: Localization;
@@ -22,14 +23,61 @@ const HomePage: NextPage<IHomePageProps> = ({
   nonCommonPaths,
   commonPaths,
 }) => {
+  //get token from local storage
+
+  const [token, setToken] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      setToken(token);
+    }
+  }, []);
+
+  function loginWithGithub() {
+    window.location.assign(
+      "https://github.com/login/oauth/authorize?client_id=" +
+        process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
+    );
+  }
+
   return (
     <>
-      <HomeTest
-        nonCommonPaths={nonCommonPaths}
-        commonPaths={commonPaths}
-        translations={localization?.translations}
-        sourceLanguage={sourceLanguage.translations}
-      />
+      <Dialog open={token ? false : true}>
+        <Box maxWidth={500}>
+          <DialogTitle>Login with Github</DialogTitle>
+          <Typography sx={{ padding: 3 }}>
+            We require you to login with Github to make pull requests to the
+            repository. Authorize the app to continue.
+          </Typography>
+          <Box margin={2}>
+            <Button
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                margin: "auto",
+                width: "fit-content",
+                padding: "10px 20px",
+                backgroundColor: "#000",
+                color: "#fff",
+              }}
+              onClick={loginWithGithub}
+            >
+              Login
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
+
+      {token && (
+        <HomeTest
+          token={token}
+          nonCommonPaths={nonCommonPaths}
+          commonPaths={commonPaths}
+          translations={localization?.translations}
+          sourceLanguage={sourceLanguage.translations}
+        />
+      )}
     </>
   );
 };
