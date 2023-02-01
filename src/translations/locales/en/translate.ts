@@ -79,7 +79,7 @@ const translate = {
   //Change
   LABEL_CHANGE_PAGE:
     'There are unsaved changes. Are you sure you want to move away? Changes will be lost',
-  LABEL_OFFICIAL_CLEAN_VERSION: 'Official Version',
+  LABEL_OFFICIAL_CLEAN_VERSION: 'sOfficial Version',
   LABEL_MY_CLEAN_VERSION: 'my version',
   LABEL_VERSION: 'version',
 };
