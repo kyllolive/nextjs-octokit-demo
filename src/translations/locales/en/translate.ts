@@ -74,7 +74,7 @@ const translate = {
   LABEL_PUBLISH: 'Publish',
   //Credits Tab
   LABEL_CONTRIBUTORS: 'Contributors',
-  LABEL_NO_CONTRIBUTORS: 'No Contributors',
+  LABEL_NO_CONTRIBUTORS: 'sNo Contributors',
 
   //Change
   LABEL_CHANGE_PAGE:
