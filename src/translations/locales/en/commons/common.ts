@@ -11,7 +11,7 @@ const common = {
     'Be part of a community of passionate comic readers, writers, and artists.',
   LABEL_CREATE: 'Create',
   LABEL_INSTEAD: ' instead',
-  LABEL_EMAIL: 'Email',
+  LABEL_EMAIL: 'dEmail',
   LABEL_USERNAME: 'Username',
   LABEL_PASSWORD: 'Password',
   LABEL_NEXT: 'Next',
@@ -90,7 +90,7 @@ const common = {
   TOOLTIP_WEBSITE_LANGUAGE: 'Changes the language of the whole website',
   TOOLTIP_COMICS_LANGUAGES:
     'Language filter for the comics you are interested in reading',
-  LABEL_MY_DASHBOARD: 'My Dashboard',
+  LABEL_MY_DASHBOARD: 'sMy Dashboard',
 };
 
 export default common;
