@@ -96,51 +96,148 @@ export const HomeTest = (props) => {
     return files;
   };
 
-  // function to get the SHA of the base branch
-  const getBaseBranchSha = async (owner, repo, baseBranch) => {
+  const getFileSha = async (owner, repo, path, branch) => {
     try {
-      const response = await axios.get(
-        `${baseURL}/repos/${owner}/${repo}/branches/${baseBranch}`
+      const { data } = await axios.get(
+        `${baseURL}/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
       );
-      return response.data.commit.sha;
+      return data.sha;
     } catch (error) {
       console.error(error);
     }
   };
 
-  // function to update files
-  const updateFiles = async (owner, repo, branch, files, baseBranchSha) => {
+  // function to get the SHA of the base branch
+  const getBranchSha = async (owner, repo, branch) => {
     try {
+      const { data } = await axios.get(
+        ` ${baseURL}/repos/${owner}/${repo}/branches/${branch}`
+      );
+      return data.commit.sha;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // const createNewBranch = async (owner, repo, branch, baseBranchSha) => {
+  //   try {
+  //     const { data } = await axios.post(
+  //       ` ${baseURL}/repos/${owner}/${repo}/git/refs`,
+  //       {
+  //         ref: `refs/heads/${branch}`,
+  //         sha: baseBranchSha,
+  //       }
+  //     );
+  //     return data;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const updateFiles = async (owner, repo, branch, files) => {
+  //   try {
+  //     const { data: tree } = await axios.post(
+  //       `${baseURL}/repos/${owner}/${repo}/git/trees`,
+  //       {
+  //         base_tree: await getBranchSha(owner, repo, branch),
+  //         tree: files.map(({ path, content }) => ({
+  //           path,
+  //           mode: "100644",
+  //           type: "blob",
+  //           content,
+  //         })),
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Token ${GITHUB_TOKEN}`,
+  //         },
+  //       }
+  //     );
+  //     const { data: commit } = await axios.post(
+  //       `${baseURL}/repos/${owner}/${repo}/git/commits`,
+  //       {
+  //         message: "Update multiple files",
+  //         tree: tree.sha,
+  //         parents: [await getBranchSha(owner, repo, branch)],
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Token ${GITHUB_TOKEN}`,
+  //         },
+  //       }
+  //     );
+  //     const { data: updatedRef } = await axios.patch(
+  //       `${baseURL}/repos/${owner}/${repo}/git/refs/heads/${branch}`,
+  //       {
+  //         sha: commit.sha,
+  //         force: true,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Token ${GITHUB_TOKEN}`,
+  //         },
+  //       }
+  //     );
+  //     return updatedRef;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const createPullRequest = async (
+  //   owner,
+  //   repo,
+  //   head,
+  //   base,
+  //   title,
+  //   body,
+  // ) => {
+  //   try {
+  //     const { data } = await axios.post(
+  //       `  ${baseURL}/repos/${owner}/${repo}/pulls`,
+  //       {
+  //         title,
+  //         head,
+  //         base,
+  //         body,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Token ${GITHUB_TOKEN}`,
+  //         },
+  //       }
+  //     );
+  //     return data;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // function to update files
+  const updateFiles = async (owner, repo, branch, files) => {
+    try {
+      const instance = axios.create({
+        headers: {
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json",
+          Authorization: `token ${GITHUB_TOKEN}`,
+        },
+      });
       const promises = files.map(async ({ path, content }) => {
-        const response = await axios.put(
+        const fileSha = await getFileSha(owner, repo, path, branch);
+        const { data } = await instance.put(
           `${baseURL}/repos/${owner}/${repo}/contents/${path}`,
           {
             message: `Update ${path}`,
             content: content,
             branch,
-            sha: baseBranchSha,
+            sha: fileSha,
           }
         );
-        return response.data;
+
+        return data;
       });
       return await Promise.all(promises);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const createPullRequest = async (owner, repo, title, body, head, base) => {
-    try {
-      const response = await axios.post(
-        `${baseURL}/repos/${owner}/${repo}/pulls`,
-        {
-          title,
-          body,
-          head,
-          base,
-        }
-      );
-      return response.data;
     } catch (error) {
       console.error(error);
     }
@@ -150,8 +247,8 @@ export const HomeTest = (props) => {
     const owner = octokitConstants.owner;
     const repo = octokitConstants.repo;
     const baseBranch = "main";
-    const title = "Update translations";
-    const body = "Updating the translations files";
+    const baseBranchSha = await getBranchSha(owner, repo, baseBranch);
+    const branch = `update-translations-${Date.now()}`;
 
     // create axios instance with necessary authentication header
     const instance = axios.create({
@@ -160,45 +257,30 @@ export const HomeTest = (props) => {
       },
     });
 
-    // get the SHA of the base branch
-    const baseBranchSha = await getBaseBranchSha(owner, repo, baseBranch);
-
-    // generate a unique branch name
-    const branch = `update-translations-${Date.now()}`;
-
     // create a new branch
-    const newBranch = await instance.post(
-      `${baseURL}/repos/${owner}/${repo}/git/refs`,
+    await instance.post(`${baseURL}/repos/${owner}/${repo}/git/refs`, {
+      ref: `refs/heads/${branch}`,
+      sha: baseBranchSha,
+    });
+
+    // update the files in the new branch
+    await updateFiles(owner, repo, branch, files);
+
+    // create a pull request
+    const pullRequest = await instance.post(
+      ` ${baseURL}/repos/${owner}/${repo}/pulls`,
       {
-        ref: `refs/heads/${branch}`,
-        sha: baseBranchSha,
+        title: ` Update translations`,
+        head: branch,
+        base: baseBranch,
+        body: "Updating translations for the project",
       }
     );
 
-    console.log("New branch created: ", newBranch.data);
-
-    // update the files in the new branch
-    const updatedFiles = await updateFiles(
-      owner,
-      repo,
-      branch,
-      files,
-      baseBranchSha
+    alert(
+      "Pull request created successfully! Check your pull request here: " +
+        pullRequest.data.html_url
     );
-
-    console.log("Updated files: ", updatedFiles);
-
-    // create a pull request
-    const pullRequest = await createPullRequest(
-      owner,
-      repo,
-      title,
-      body,
-      branch,
-      baseBranch
-    );
-
-    console.log("Pull request created: ");
   };
 
   const handleSubmitOctokit = async () => {
@@ -230,16 +312,12 @@ export const HomeTest = (props) => {
         };
         prArr.push({
           path: path,
-          content: updatedContent,
+          content: Buffer.from(updatedContent).toString("base64"),
         });
       }
     }
-
-    console.log("prArr", prArr);
-
-    const result = await main(prArr);
-
-    console.log("result", result);
+    await main(prArr);
+    setIsLoading(false);
   };
 
   return (

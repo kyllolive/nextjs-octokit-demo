@@ -3,6 +3,8 @@ import { styled } from "@mui/material/styles";
 import EdiText from "react-editext";
 import React, { useEffect, useState } from "react";
 import { octokitConstants } from "../../constants/octokit.constants";
+import axios from "axios";
+
 const StyledEditText = styled(EdiText)(() => ({
   "& button": {
     borderRadius: "5px",
@@ -42,11 +44,28 @@ export const ItemTest = (props) => {
   const [newText, setNewText] = React.useState<string>("");
   const [keyName, setKeyName] = React.useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const baseURL = "https://api.github.com";
 
   useEffect(() => {
     setNewText(translationValue);
     setKeyName(translationKey);
   }, [translationKey, translationValue]);
+
+  const getContent = async (owner, repo, path) => {
+    try {
+      const instance = axios.create({
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+      });
+      const { data } = await instance.get(
+        `${baseURL}/repos/${owner}/${repo}/contents/${path}`
+      );
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSave = async (event) => {
     if (event === newText) return;
@@ -56,20 +75,16 @@ export const ItemTest = (props) => {
     setIsLoading(true);
     setNewText(event);
 
-    const getContent = await octokit.request(
-      "GET /repos/{owner}/{repo}/contents/{path}",
-      {
-        owner: octokitConstants.owner,
-        repo: octokitConstants.repo,
-        path: path,
-      }
+    const getContentData = await getContent(
+      octokitConstants.owner,
+      octokitConstants.repo,
+      path
     );
 
-    if (getContent.status === 200) {
-      const content = Buffer.from(
-        getContent.data["content"],
-        "base64"
-      ).toString("utf-8");
+    if (getContentData.content) {
+      const content = Buffer.from(getContentData.content, "base64").toString(
+        "utf-8"
+      );
 
       handleNewItem({
         path: path,
