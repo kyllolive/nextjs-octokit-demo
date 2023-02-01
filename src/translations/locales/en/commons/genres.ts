@@ -1,6 +1,6 @@
 const genres = {
   GENRE_ALL: 'All',
-  GENRE_ACTION: 'Action',
+  GENRE_ACTION: 'sAction',
   GENRE_ADVENTURE: 'Adventure',
   GENRE_COMEDY: 'Comedy',
   GENRE_CYBERPUNK: 'Cyberpunk',
