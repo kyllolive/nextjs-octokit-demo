@@ -16,6 +16,7 @@ jobs:
           repository: kyllolive/nextjs-octokit-demo
           ref: main
           path: nextjs-octokit-demo
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
       - name: Checkout target repository
         uses: actions/checkout@v2
@@ -23,6 +24,7 @@ jobs:
           repository: kyllolive/octokit-demo
           ref: main
           path: octokit-demo
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
       - name: Check contents of target repository
         run: |
