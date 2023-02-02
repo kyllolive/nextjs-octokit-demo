@@ -53,7 +53,7 @@ jobs:
           git commit -m "Update translations folder"
           git push -u origin update-translations
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v2
@@ -62,4 +62,4 @@ jobs:
           body: "This pull request updates the translations folder with the latest changes."
           head: update-translations
           base: main
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
