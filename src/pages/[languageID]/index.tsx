@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { locales } from "../../translations/config";
 import {
@@ -8,8 +8,15 @@ import {
 } from "../../context/language.context";
 import { Localization, SourceLanguage } from "../../translations/types";
 import { HomeTest } from "../../containers/Home/HomeTest";
-import { Dialog, Box, Typography, Button, DialogTitle } from "@mui/material";
-
+import {
+  Dialog,
+  Box,
+  Typography,
+  Button,
+  DialogTitle,
+  CircularProgress,
+} from "@mui/material";
+import { useAuth } from "../../context/auth.context";
 export interface IHomePageProps {
   localization?: Localization;
   sourceLanguage?: SourceLanguage;
@@ -23,27 +30,21 @@ const HomePage: NextPage<IHomePageProps> = ({
   nonCommonPaths,
   commonPaths,
 }) => {
-  //get token from local storage
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { accessToken } = useAuth();
 
-  const [token, setToken] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      setToken(token);
-    }
-  }, []);
-
-  function loginWithGithub() {
+  const loginWithGithub = () => {
+    setIsLoading(true);
     window.location.assign(
       "https://github.com/login/oauth/authorize?client_id=" +
-        process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID
+        process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID +
+        "&scope=repo"
     );
-  }
+  };
 
   return (
     <>
-      <Dialog open={token ? false : true}>
+      <Dialog open={accessToken ? false : true}>
         <Box maxWidth={500}>
           <DialogTitle>Login with Github</DialogTitle>
           <Typography sx={{ padding: 3 }}>
@@ -51,33 +52,40 @@ const HomePage: NextPage<IHomePageProps> = ({
             repository. Authorize the app to continue.
           </Typography>
           <Box margin={2}>
-            <Button
-              style={{
-                justifyContent: "center",
-                display: "flex",
-                margin: "auto",
-                width: "fit-content",
-                padding: "10px 20px",
-                backgroundColor: "#000",
-                color: "#fff",
-              }}
-              onClick={loginWithGithub}
-            >
-              Login
-            </Button>
+            {isLoading && (
+              <CircularProgress
+                style={{
+                  justifyContent: "center",
+                  display: "flex",
+                  margin: "auto",
+                }}
+              />
+            )}
+            {!isLoading && (
+              <Button
+                style={{
+                  justifyContent: "center",
+                  display: "flex",
+                  margin: "auto",
+                  width: "fit-content",
+                  padding: "10px 20px",
+                  backgroundColor: "#000",
+                  color: "#fff",
+                }}
+                onClick={loginWithGithub}
+              >
+                Login
+              </Button>
+            )}
           </Box>
         </Box>
       </Dialog>
-
-      {token && (
-        <HomeTest
-          token={token}
-          nonCommonPaths={nonCommonPaths}
-          commonPaths={commonPaths}
-          translations={localization?.translations}
-          sourceLanguage={sourceLanguage.translations}
-        />
-      )}
+      <HomeTest
+        nonCommonPaths={nonCommonPaths}
+        commonPaths={commonPaths}
+        translations={localization?.translations}
+        sourceLanguage={sourceLanguage.translations}
+      />
     </>
   );
 };

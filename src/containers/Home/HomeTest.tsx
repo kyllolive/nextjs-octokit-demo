@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import { Language } from "../../components/Language/Language";
 import randomWords from "random-words";
 import axios from "axios";
+import { useAuth } from "../../context/auth.context";
 
 const MyOctokit = Octokit.plugin(createPullRequest);
 
@@ -29,6 +30,7 @@ const octokit = new MyOctokit({
 
 export const HomeTest = (props) => {
   const ROWS_PER_PAGE = 10;
+  const { accessToken } = useAuth();
   const { translations, sourceLanguage, commonPaths, nonCommonPaths, token } =
     props;
   const { query, push } = useRouter();
@@ -41,7 +43,7 @@ export const HomeTest = (props) => {
     { path: "", content: "", key: "", contentFromGH: "" },
   ]);
 
-  const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+  const GITHUB_TOKEN = accessToken;
 
   const baseURL = "https://api.github.com";
 
@@ -119,100 +121,6 @@ export const HomeTest = (props) => {
     }
   };
 
-  // const createNewBranch = async (owner, repo, branch, baseBranchSha) => {
-  //   try {
-  //     const { data } = await axios.post(
-  //       ` ${baseURL}/repos/${owner}/${repo}/git/refs`,
-  //       {
-  //         ref: `refs/heads/${branch}`,
-  //         sha: baseBranchSha,
-  //       }
-  //     );
-  //     return data;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // const updateFiles = async (owner, repo, branch, files) => {
-  //   try {
-  //     const { data: tree } = await axios.post(
-  //       `${baseURL}/repos/${owner}/${repo}/git/trees`,
-  //       {
-  //         base_tree: await getBranchSha(owner, repo, branch),
-  //         tree: files.map(({ path, content }) => ({
-  //           path,
-  //           mode: "100644",
-  //           type: "blob",
-  //           content,
-  //         })),
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Token ${GITHUB_TOKEN}`,
-  //         },
-  //       }
-  //     );
-  //     const { data: commit } = await axios.post(
-  //       `${baseURL}/repos/${owner}/${repo}/git/commits`,
-  //       {
-  //         message: "Update multiple files",
-  //         tree: tree.sha,
-  //         parents: [await getBranchSha(owner, repo, branch)],
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Token ${GITHUB_TOKEN}`,
-  //         },
-  //       }
-  //     );
-  //     const { data: updatedRef } = await axios.patch(
-  //       `${baseURL}/repos/${owner}/${repo}/git/refs/heads/${branch}`,
-  //       {
-  //         sha: commit.sha,
-  //         force: true,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Token ${GITHUB_TOKEN}`,
-  //         },
-  //       }
-  //     );
-  //     return updatedRef;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // const createPullRequest = async (
-  //   owner,
-  //   repo,
-  //   head,
-  //   base,
-  //   title,
-  //   body,
-  // ) => {
-  //   try {
-  //     const { data } = await axios.post(
-  //       `  ${baseURL}/repos/${owner}/${repo}/pulls`,
-  //       {
-  //         title,
-  //         head,
-  //         base,
-  //         body,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Token ${GITHUB_TOKEN}`,
-  //         },
-  //       }
-  //     );
-  //     return data;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   // function to update files
   const updateFiles = async (owner, repo, branch, files) => {
     try {
@@ -220,7 +128,7 @@ export const HomeTest = (props) => {
         headers: {
           Accept: "application/vnd.github+json",
           "Content-Type": "application/json",
-          Authorization: `token ${GITHUB_TOKEN}`,
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
         },
       });
       const promises = files.map(async ({ path, content }) => {
@@ -253,7 +161,8 @@ export const HomeTest = (props) => {
     // create axios instance with necessary authentication header
     const instance = axios.create({
       headers: {
-        Authorization: `Token ${GITHUB_TOKEN}`,
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
       },
     });
 

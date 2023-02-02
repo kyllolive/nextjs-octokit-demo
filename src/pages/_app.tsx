@@ -1,8 +1,11 @@
-import { LanguageModalProvider } from "../context/language.context";
-export default function App({ Component, pageProps }) {
+import { AuthProvider } from "../context/auth.context";
+
+const App = ({ Component, pageProps }) => {
   return (
-    <LanguageModalProvider>
+    <AuthProvider>
       <Component {...pageProps} />
-    </LanguageModalProvider>
+    </AuthProvider>
   );
-}
+};
+
+export default App;
