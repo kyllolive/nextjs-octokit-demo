@@ -63,7 +63,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v2
+        uses: peter-evans/create-pull-request@v4
         with:
           title: "Update translations folder"
           body: "This pull request updates the translations folder with the latest changes."
