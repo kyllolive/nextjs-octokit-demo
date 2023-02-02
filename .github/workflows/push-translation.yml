@@ -39,10 +39,20 @@ jobs:
           rm -rf src/translations
           cp -r ../nextjs-octokit-demo/src/translations src/
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Create branch
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git checkout -b update-translations
+          git add src/translations
+          git commit -m "Update translations folder"
+          git push -u origin update-translations
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v2
         with:
-          github_token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-          branch: update_translations
-          force: true
-          folder: octokit-demo
+          title: "Update translations folder"
+          body: "This pull request updates the translations folder with the latest changes."
+          head: update-translations
+          base: main
+          token: ${{ env.GITHUB_TOKEN }}
