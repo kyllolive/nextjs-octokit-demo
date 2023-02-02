@@ -67,6 +67,6 @@ jobs:
         with:
           title: "Update translations folder"
           body: "This pull request updates the translations folder with the latest changes."
-          head: update-translations
+          branch: update-translations
           base: main
           token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
