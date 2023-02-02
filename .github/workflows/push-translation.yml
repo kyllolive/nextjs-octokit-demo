@@ -32,7 +32,7 @@ jobs:
       - name: Update translations folder
         run: |
           rm -rf src/translations
-          cp -r ../nextjs-octokit-demo/src/translations src/
+          cp -r ./nextjs-octokit-demo/src/translations src/
 
       - name: Commit changes
         run: |
