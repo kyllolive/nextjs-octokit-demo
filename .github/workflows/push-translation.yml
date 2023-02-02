@@ -55,7 +55,7 @@ jobs:
           git checkout -b update-translations
           git add src/translations
           git commit -m "Update translations folder"
-          git push -u origin update-translations
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
