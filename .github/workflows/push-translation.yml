@@ -3,7 +3,7 @@ name: Update Translation Files
 on:
   push:
     branches:
-      - main
+      - feat/push-translation
 
 env:
   GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
