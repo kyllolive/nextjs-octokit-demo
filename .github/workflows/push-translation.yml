@@ -65,7 +65,7 @@ jobs:
       - name: create pull request
         run: |
           cd octokit-demo
-          gh pr create -B update-translations -H main --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
+          gh pr create -B main -H update-translations --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
