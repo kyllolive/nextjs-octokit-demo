@@ -28,6 +28,13 @@ jobs:
           ref: main
           path: ../nextjs-octokit-demo
 
+      - name: Verify source repository
+        run: |
+          if [ ! -d "../nextjs-octokit-demo/src/translations" ]; then
+            echo "Error: Source repository does not exist or does not contain src/translations."
+            exit 1
+          fi
+
       - name: Update translations folder
         run: |
           rm -rf src/translations
