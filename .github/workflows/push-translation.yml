@@ -39,11 +39,11 @@ jobs:
           rm -rf src/translations
           cp -r ../nextjs-octokit-demo/src/translations src/
 
-      - name: Set up Git
-        run: |
-          cd octokit-demo
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+      # - name: Set up Git
+      #   run: |
+      #     cd octokit-demo
+      #     git config --global user.email "actions@github.com"
+      #     git config --global user.name "GitHub Actions"
 
       - name: Create branch
         run: |
@@ -51,8 +51,8 @@ jobs:
           git init
           git remote remove origin
           git remote add origin https://github.com/kyllolive/octokit-demo.git
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.email "kyllolive@gmail.com"
+          git config --global user.name "kyllolive"
           git checkout -b update-translations 
           git add src/translations
           git commit -m "Update translations folder"
