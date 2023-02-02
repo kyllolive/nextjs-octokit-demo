@@ -1,24 +1,58 @@
-name: Create Pull Request
+name: Update Translation Files
 
 on:
   push:
     branches:
-      - dev
+      - main
+
+env:
+  GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+
 jobs:
-  copy-file:
+  update-translations:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout source repository
         uses: actions/checkout@v2
 
-      - name: Pushes Translate file
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.MY_PAT }}
+      - name: Clone target repository
+        uses: actions/checkout@v2
         with:
-          source_file: "src/translations"
-          destination_repo: "kyllolive/epico-translations"
-          destination_folder: "src/translations"
-          user_email: "kyllolive@gmail.com"
-          user_name: "kyllolive"
-          commit_message: "A custom message for the commit"
+          ref: main
+          repository: kyllolive/octokit-demo
+          token: ${{ env.ACTIONS_GITHUB_TOKEN }}
+
+      - name: Create branch
+        run: |
+          git checkout -b update-translations
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+
+      - name: Update translations folder
+        run: |
+          rm -rf src/translations
+          cp -r ../nextjs-octokit-demo/src/translations src/
+
+      - name: Commit changes
+        run: |
+          git add src/translations
+          git commit -m "Update translations folder"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          branch: update-translations
+          token: ${{ env.ACTIONS_GITHUB_TOKEN }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v2
+        with:
+          commit-message: Update translations folder
+          title: Update translations folder
+          body: |
+            This pull request updates the translations folder in the target repository.
+
+          labels: update, translations
+          reviewers: kyllolive@gmail.com
+          token: ${{ env.ACTIONS_GITHUB_TOKEN }}
