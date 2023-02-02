@@ -32,7 +32,7 @@ jobs:
       - name: List contents of source translations directory
         run: |
           echo "Contents of source translations directory:"
-          ls ../<source-repo-name>/src/translations
+          ls ../nextjs-octokit-demo
 
       - name: Update translations folder
         run: |
