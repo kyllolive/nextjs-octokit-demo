@@ -29,10 +29,15 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
 
+      - name: List contents of source translations directory
+        run: |
+          echo "Contents of source translations directory:"
+          ls ../<source-repo-name>/src/translations
+
       - name: Update translations folder
         run: |
           rm -rf src/translations
-          cp -r ./nextjs-octokit-demo/src/translations src/
+          cp -r ../nextjs-octokit-demo/src/translations src/
 
       - name: Commit changes
         run: |
