@@ -1,57 +1,48 @@
-name: Update translations
+name: CI
 
 on:
   push:
     branches:
-      - feat/push-translation
-
-env:
-  GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+      - feat/push-translations
 
 jobs:
-  update-translations:
+  update_translations:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout target repository
-        uses: actions/checkout@v2
-        with:
-          ref: main
-          repository: kyllolive/octokit-demo
-          token: ${{ env.GITHUB_TOKEN }}
-
       - name: Checkout source repository
         uses: actions/checkout@v2
         with:
           repository: kyllolive/nextjs-octokit-demo
-          token: ${{ env.GITHUB_TOKEN }}
           ref: main
-          path: ../nextjs-octokit-demo
+          path: nextjs-octokit-demo
 
-      - name: List contents of source translations directory
+      - name: Checkout target repository
+        uses: actions/checkout@v2
+        with:
+          repository: kyllolive/octokit-demo
+          ref: main
+          path: octokit-demo
+
+      - name: Check contents of target repository
         run: |
-          echo "Contents of source translations directory:"
-          ls .
+          cd octokit-demo
+          if [ -d "src/translations" ]; then
+            echo "Target repository contains src/translations folder."
+          else
+            echo "Target repository does not contain src/translations folder."
+          fi
 
       - name: Update translations folder
         run: |
+          cd octokit-demo
           rm -rf src/translations
           cp -r ../nextjs-octokit-demo/src/translations src/
 
-      - name: Create branch
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git checkout -b update-translations
-          git add src/translations
-          git commit -m "Update translations folder"
-          git push -u origin update-translations
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v2
+      - name: Push changes
+        uses: ad-m/github-push-action@main
         with:
-          title: "Update translations folder"
-          body: "This pull request updates the translations folder with the latest changes."
-          head: update-translations
-          base: main
-          token: ${{ env.GITHUB_TOKEN }}
+          github_token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+          branch: update_translations
+          force: true
+          folder: octokit-demo
