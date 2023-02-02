@@ -48,6 +48,10 @@ jobs:
       - name: Create branch
         run: |
           cd octokit-demo
+          git init
+          git remote add origin https://github.com/kyllolive/octokit-demo.git
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           git checkout -b update-translations
           git add src/translations
           git commit -m "Update translations folder"
