@@ -21,7 +21,7 @@ jobs:
         with:
           ref: main
           repository: kyllolive/octokit-demo
-          token: ${{ env.ACTIONS_GITHUB_TOKEN }}
+          token: ${{ env.GITHUB_TOKEN }}
 
       - name: Create branch
         run: |
@@ -43,7 +43,7 @@ jobs:
         uses: ad-m/github-push-action@v0.6.0
         with:
           branch: update-translations
-          token: ${{ env.ACTIONS_GITHUB_TOKEN }}
+          token: ${{ env.GITHUB_TOKEN }}
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v2
@@ -55,4 +55,4 @@ jobs:
 
           labels: update, translations
           reviewers: kyllolive@gmail.com
-          token: ${{ env.ACTIONS_GITHUB_TOKEN }}
+          token: ${{ env.GITHUB_TOKEN }}
