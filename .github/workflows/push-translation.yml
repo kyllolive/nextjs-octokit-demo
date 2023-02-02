@@ -6,7 +6,7 @@ on:
       - feat/push-translation
 
 env:
-  GITHUB_TOKEN: ${{ secrets.ACTION_GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
 
 jobs:
   update-translations:
