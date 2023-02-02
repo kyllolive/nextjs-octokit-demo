@@ -40,7 +40,7 @@ jobs:
           cp -r ../nextjs-octokit-demo/src/translations src/
 
       - name: Push changes
-        uses: ad-m/github-push-action@main
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
           branch: update_translations
